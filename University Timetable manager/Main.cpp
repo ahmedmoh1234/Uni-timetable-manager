@@ -11,9 +11,23 @@ using namespace std;
 template<class T>
 ostream & operator << (ostream &out, const DynArr<T> &D)
 {
+
 	for (int i = 0; i < D.size; i++)
 	{
 		out << D.darr[i] << " ";
+	}
+	out << "\n";
+
+
+	return out;
+}
+
+template<class T>
+ostream & operator << (ostream &out, const TimeTable &t)
+{
+	for (int i = 0; i < D.size; i++)
+	{
+		out << t.table[i] << " ";
 	}
 	out << "\n";
 	return out;
@@ -39,7 +53,6 @@ ostream & operator << (ostream &out, const Course &c)		//Working
 
 int main()
 {
-
 	//----------------------------------------a few messages for the user
 	cout << "This program is used to create for you the University timetable" << endl;
 	cout << "THIS PROGRAM IS NOT GUARANTEED!!!, YOU MUST VERIFY THE TIMETABLE ON THE WEBSITE " << endl;
@@ -184,7 +197,16 @@ int main()
 			}
 
 		}
+		//----------------------------------------------------Testing
+		cout << "Course: " << p_user_courses[i] << "\n";
+		cout << "Lectures: \n";
+		cout << lec;
+		cout << "Tutorials: \n";
+		cout << tut;
+		cout << "\n";
 
+		system("pause");
+		//---------------------------------------------------
 		for ( int j = 0; j < lec.Size(); j++ )
 		{
 			for ( int k = 0; k < tut.Size(); k++ )
