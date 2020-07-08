@@ -217,6 +217,13 @@ int main()
 
 
 
+	for (int i = 0; i < p_user_courses->size(); i++)
+	{
+		cout << "Course: " << p_user_courses[i] << "\n";
+		cout << subjects.Get(i).Get(i).Get(2);
+		cout << "\n";
+		system("pause");
+	}
 
 
 

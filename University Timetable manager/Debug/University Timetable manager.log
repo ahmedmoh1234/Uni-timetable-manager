@@ -1,0 +1,24 @@
+﻿Build started 7/8/2020 9:10:31 PM.
+     1>Project "E:\Programming Projects\University time table manager\Github\Uni-timetable-manager\University Timetable manager\University Timetable manager.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Course.cpp Functions.cpp Main.cpp
+         Main.cpp
+     1>e:\programming projects\university time table manager\github\uni-timetable-manager\university timetable manager\main.cpp(220): warning C4018: '<' : signed/unsigned mismatch
+         Functions.cpp
+     1>e:\programming projects\university time table manager\github\uni-timetable-manager\university timetable manager\functions.cpp(6): warning C4018: '<' : signed/unsigned mismatch
+         Course.cpp
+         Generating Code...
+     1>e:\programming projects\university time table manager\github\uni-timetable-manager\university timetable manager\dynamicarray.h(29): warning C4715: 'DynArr<Course *>::Get' : not all control paths return a value
+     1>e:\programming projects\university time table manager\github\uni-timetable-manager\university timetable manager\dynamicarray.h(29): warning C4715: 'DynArr<TimeTable *>::Get' : not all control paths return a value
+     1>e:\programming projects\university time table manager\github\uni-timetable-manager\university timetable manager\dynamicarray.h(29): warning C4715: 'DynArr<DynArr<DynArr<TimeTable *> > >::Get' : not all control paths return a value
+     1>e:\programming projects\university time table manager\github\uni-timetable-manager\university timetable manager\dynamicarray.h(29): warning C4715: 'DynArr<DynArr<TimeTable *> >::Get' : not all control paths return a value
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Programming Projects\University time table manager\Github\Uni-timetable-manager\Debug\University Timetable manager.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\Programming Projects\University time table manager\Github\Uni-timetable-manager\Debug\University Timetable manager.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Programming Projects\University time table manager\Github\Uni-timetable-manager\Debug\University Timetable manager.lib" /MACHINE:X86 Debug\Course.obj
+         Debug\Functions.obj
+         Debug\Main.obj
+         University Timetable manager.vcxproj -> E:\Programming Projects\University time table manager\Github\Uni-timetable-manager\Debug\University Timetable manager.exe
+     1>Done Building Project "E:\Programming Projects\University time table manager\Github\Uni-timetable-manager\University Timetable manager\University Timetable manager.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.70
