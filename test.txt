@@ -1,7 +1,13 @@
+mthn103a l 08 11 sun
+mthn103b l 08 11 sun
+mthn102a l 08 11 sun
+phyn102a l 08 11 sun
 genn102a l 09 11 sun
 cmpn101b t 11 13 sun
 cmpn103c l 11 13 mon
 mthn103d t 09 11 tue
+mthn103a t 09 11 tue
+mthn103b t 09 11 tue
 elcn102e t 11 13 wed
 mthn102f t 11 13 thu
 mthn102f t 11 15 thu
