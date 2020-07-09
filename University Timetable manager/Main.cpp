@@ -23,6 +23,20 @@ ostream & operator << (ostream &out, const DynArr<T> &D)
 }
 
 template<class T>
+ostream & operator << (ostream &out, const DynArr<T*> &D)
+{
+
+	for (int i = 0; i < D.size; i++)
+	{
+		out << *(D.darr[i]) << " ";
+	}
+	out << "\n";
+
+
+	return out;
+}
+
+template<class T>
 ostream & operator << (ostream &out, const TimeTable &t)
 {
 	for (int i = 0; i < D.size; i++)
@@ -47,6 +61,24 @@ ostream & operator << (ostream &out, const Course &c)		//Working
 	cout << "\tStart time : " << c.start_time << "\t\t";
 	cout << "End time: " << c.end_time << " \t" ;
 	cout << "Linker to tutorial: " << c.code ;
+	cout << "\n" ;
+	return out;
+}
+
+ostream & operator << (ostream &out, const Course* &c)		//Working
+{
+	out << "Course code: " << c->course_code << "  " ;
+
+	if (c->is_lecture == true)
+		cout << "Lecture\t" ;
+	else if (c->is_tutorial == true)
+		cout << "Tutorial\t";
+
+	Print_Day_From_Day(c->day);
+
+	cout << "\tStart time : " << c->start_time << "\t\t";
+	cout << "End time: " << c->end_time << " \t" ;
+	cout << "Linker to tutorial: " << c->code ;
 	cout << "\n" ;
 	return out;
 }

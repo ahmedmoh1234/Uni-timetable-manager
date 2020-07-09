@@ -95,6 +95,7 @@ public:
 	template<class T>
 	friend ostream & operator << (ostream &out, const DynArr<T> &c);
 
+	friend ostream & operator << (ostream &out, const DynArr<T*> &c);
 	~DynArr()
 	{
 		delete [] darr;

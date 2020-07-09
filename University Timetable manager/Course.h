@@ -46,6 +46,7 @@ public:
 
 	friend ostream & operator << (ostream &out, const Course &c);
 
+	friend ostream & operator << (ostream &out, const Course* &c);
 
 	~Course(void);
 };
