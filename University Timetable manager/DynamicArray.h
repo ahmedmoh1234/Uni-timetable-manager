@@ -46,7 +46,7 @@ public:
 		if ( size == capacity )
 		{
 			T* arr_new = new T [2 * capacity];
-			for ( int  i = 0; i < size - 1; i++)
+			for ( int  i = 0; i < size ; i++)
 			{
 				arr_new[i] = darr[i];
 			}
@@ -92,10 +92,21 @@ public:
 		std::cout << "Printing array ended \n";
 	}
 
+	void PrintPtr()
+	{
+		std::cout << "Printing array started \n";
+		for (int i = 0; i < size; i++)
+		{
+			std::cout << *(darr[i]) << " ";
+		}
+		std::cout << "Printing array ended \n";
+	}
+
 	template<class T>
 	friend ostream & operator << (ostream &out, const DynArr<T> &c);
 
 	friend ostream & operator << (ostream &out, const DynArr<T*> &c);
+	
 	~DynArr()
 	{
 		delete [] darr;

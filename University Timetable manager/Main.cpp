@@ -219,32 +219,41 @@ int main()
 
 		for (int j = 0; j < no_of_courses; j++)
 		{
+			//TO BE REMOVED
+			cout << "\nThe course we are trying to add to lectures or tutorials array: \n";
+			cout << *(courses[j]) ;
+			system("pause");
 			if ( courses[j]->getCourse() == p_user_courses[i] && courses[j]->isLecture() )
 			{
 				lec.PushBack( courses[j] );
+				cout << "The course has been added to lectures\n";
+				system("pause");
 			}
 			else if ( courses[j]->getCourse() == p_user_courses[i] && courses[j]->isTutorial() )
 			{
 				tut.PushBack( courses[j] );
+				cout << "The course has been added to tutorials\n";
+				cout << courses[j];
+				system("pause");
+				//tut.Print();
+				//system("pause");
 			}
-
 		}
-		//----------------------------------------------------Testing
-		cout << "Course: " << p_user_courses[i] << "\n";
-		cout << "Lectures: \n";
-		cout << lec;
-		cout << "Tutorials: \n";
-		cout << tut;
-		cout << "\n";
 
+		tut.Print();
 		system("pause");
-		//---------------------------------------------------
+
+		int ** mm;
+		mm = new int* [5];
+		for (int  i = 0; i < 11; i++)
+			mm[i] = new int [11];
+
 		for ( int j = 0; j < lec.Size(); j++ )
 		{
 			for ( int k = 0; k < tut.Size(); k++ )
 			{
-				int ** mm;
-				if ( lec.Get(j)->getLinker() == tut.Get(k)->getLinker() && Add_Matrix_And_Check( lec.Get(j)->getMatrix(), tut.Get(k)->getMatrix(), mm) )
+
+				if ( lec.Get(j)->getLinker() == tut.Get(k)->getLinker() && Check_If_Matrix_Added( lec.Get(j)->getMatrix(), tut.Get(k)->getMatrix() ) )
 				{
 					TimeTable* t = new TimeTable();
 					t->AddCourse( lec.Get(j) );
@@ -271,13 +280,13 @@ int main()
 
 
 
-	for (int i = 0; i < p_user_courses->size(); i++)
+	/*for (int i = 0; i < p_user_courses->size(); i++)
 	{
-		cout << "Course: " << p_user_courses[i] << "\n";
-		cout << subjects.Get(i).Get(i).Get(2);
-		cout << "\n";
-		system("pause");
-	}
+	cout << "Course: " << p_user_courses[i] << "\n";
+	cout << subjects.Get(i).Get(i).Get(2);
+	cout << "\n";
+	system("pause");
+	}*/
 
 
 

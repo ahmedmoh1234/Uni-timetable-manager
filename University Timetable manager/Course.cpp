@@ -54,20 +54,13 @@ Course::Course(std::string s, char c, int st, int et, char b, Day d)
 
 				}
 				else {matrix_of_time[i][j] = 0;}
-
 			}
 			else
 			{
 				matrix_of_time[i][j] = 0;
 			}
-
-
-			
 		}
-
 	}
-
-	
 }
 
 
