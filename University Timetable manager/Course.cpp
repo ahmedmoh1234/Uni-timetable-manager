@@ -18,7 +18,7 @@ Course::Course(std::string s, char c, int st, int et, char b, Day d)
 	end_time	= et;
 
 	day			= d;
-	
+
 	Convert_String_To_Uppercase(b);
 	if ( b == 'L')
 	{
@@ -64,10 +64,76 @@ Course::Course(std::string s, char c, int st, int et, char b, Day d)
 }
 
 
+Course::Course(std::string user_input)
+{
+	string ccode				= user_input.substr(0,7);
+	Convert_String_To_Uppercase(ccode);
+	course_code = ccode;
+
+	char linker_to_tutorial		= user_input[7];
+	Convert_String_To_Uppercase(linker_to_tutorial);
+	code		= linker_to_tutorial;
+
+	char lec_or_tut			= user_input[9];
+	Convert_String_To_Uppercase(lec_or_tut);
+	if ( lec_or_tut == 'L')
+	{
+		is_lecture  = true;
+		is_tutorial = false;
+	}
+	else if ( lec_or_tut == 'T')
+	{
+		is_lecture  = false;
+		is_tutorial = true;
+	}
+
+	string t1				= user_input.substr(11,2);
+	string t2				= user_input.substr(14,2);
+
+	int st				= stoi(t1);
+	int et				= stoi(t2);
+	start_time = st;
+	end_time	= et;
+
+	matrix_of_time = new int* [5];
+	for (int  i = 0; i < 11; i++)
+		matrix_of_time[i] = new int [11];
+	//--------------------------------------------
+	Day d				= Read_Day_From_String( user_input.substr(17,3) );
+	day = d;
+
+	for (int i = 0; i<5; i++)
+	{
+		for (int j = 0; j<11; j++)
+		{
+			if ( (d-1) == i )
+			{
+				if ( (st - 8) == j)
+				{
+					for ( int k = (st - 8); k < (et - 8); k++)
+					{
+						matrix_of_time[i][k] = 1;
+						j = k;
+					}
+
+				}
+				else {matrix_of_time[i][j] = 0;}
+			}
+			else
+			{
+				matrix_of_time[i][j] = 0;
+			}
+		}
+	}
+
+	
+}
+
+
 const void Course::print() 
 {
 	cout << "Course code: " << course_code << "  " ;
-	
+
 	if (is_lecture == true)
 		cout << "Lecture\t" ;
 	else if (is_tutorial == true)

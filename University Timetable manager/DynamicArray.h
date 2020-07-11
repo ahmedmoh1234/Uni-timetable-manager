@@ -109,8 +109,8 @@ public:
 	
 	~DynArr()
 	{
-		delete [] darr;
-		darr = nullptr;
+		//delete [] darr;
+		//darr = nullptr;
 	}
 
 

@@ -36,12 +36,11 @@ ostream & operator << (ostream &out, const DynArr<T*> &D)
 	return out;
 }
 
-template<class T>
 ostream & operator << (ostream &out, const TimeTable &t)
 {
-	for (int i = 0; i < D.size; i++)
+	for (int i = 0; i < t.table.Size(); i++)
 	{
-		out << t.table[i] << " ";
+		out << *(t.table.Get(i)) << " ";
 	}
 	out << "\n";
 	return out;
@@ -95,13 +94,6 @@ int main()
 	cout << "\n" ;
 
 	///-----------------------------Getting inputs and adding them to an array
-	string user_input;
-	string code;
-	char lec_or_tut;
-	char linker_to_tutorial;
-	int st;
-	int et;
-
 	cout << "Please enter: " << endl;
 	cout << "1. lecture code + a unique letter to link it with a tutorial. " << endl;
 	cout << "2. 'l' for lecture OR 't' for tutorial " << endl;
@@ -111,28 +103,18 @@ int main()
 	//			 01234567890123456789
 	cout << "YOU NEED TO WRITE A LETTER EVEN IF THERE IS NO TUTORIAL (like GENNs)" << endl;
 	cout << "\n" ;
-
+	string user_input;
 	getline(cin, user_input);
 
-	code				= user_input.substr(0,7);
-	linker_to_tutorial	= user_input[7];
-	lec_or_tut			= user_input[9];
-
-	string t1			= user_input.substr(11,2);
-	string t2			= user_input.substr(14,2);
-
-	st				= stoi(t1);
-	et				= stoi(t2);
-
-	Day d			= Read_Day_From_String( user_input.substr(17,3) );
+	
 
 	Course* courses[200];
 	int no_of_courses = 0;
 
-	courses[no_of_courses] = new Course (code, linker_to_tutorial, st, et, lec_or_tut, d);
+	courses[no_of_courses] = new Course (user_input);
 	//courses[no_of_courses]->print_matrix(); //////testing
 	no_of_courses++;
-
+	string code = user_input.substr(0,7);
 	while ( code.length() == 7  )
 	{
 		cout << "\n" ;
@@ -144,18 +126,7 @@ int main()
 		if (code == "0")
 		{break;}
 
-		linker_to_tutorial	= user_input[7];
-		lec_or_tut			= user_input[9];
-
-		string t1			= user_input.substr(11,2);
-		string t2			= user_input.substr(14,2);
-
-		st					= stoi(t1);
-		et					= stoi(t2);
-
-		Day d				= Read_Day_From_String( user_input.substr(17,3) );
-
-		courses[no_of_courses] = new Course (code, linker_to_tutorial, st, et, lec_or_tut, d);
+		courses[no_of_courses] = new Course (user_input);
 		///courses[no_of_courses]->print_matrix(); //////testing
 		no_of_courses++;
 
@@ -219,29 +190,15 @@ int main()
 
 		for (int j = 0; j < no_of_courses; j++)
 		{
-			//TO BE REMOVED
-			cout << "\nThe course we are trying to add to lectures or tutorials array: \n";
-			cout << *(courses[j]) ;
-			system("pause");
 			if ( courses[j]->getCourse() == p_user_courses[i] && courses[j]->isLecture() )
 			{
 				lec.PushBack( courses[j] );
-				cout << "The course has been added to lectures\n";
-				system("pause");
 			}
 			else if ( courses[j]->getCourse() == p_user_courses[i] && courses[j]->isTutorial() )
 			{
 				tut.PushBack( courses[j] );
-				cout << "The course has been added to tutorials\n";
-				cout << courses[j];
-				system("pause");
-				//tut.Print();
-				//system("pause");
 			}
 		}
-
-		tut.Print();
-		system("pause");
 
 		int ** mm;
 		mm = new int* [5];
@@ -264,42 +221,31 @@ int main()
 		}
 
 		// add array to "subjects" arr
-		if (lec_tut.Size() != 0)
+		for  (int a = 0; a < lec_tut.Size(); a++)
 		{
 			course_1.PushBack( lec_tut );
 			subjects.PushBack( course_1 );
 		}
-		else
+		if (lec_tut.Size() == 0)
 		{
 			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
 		}
 
+		cout << "Printing Timetable contents: \n";
+		system("pause");
+
+		for (int l = 0; l < course_1.Size(); l++)
+		{
+			for (int y = 0; y < course_1.Get(l).Size(); y++)
+			{
+				cout << *(course_1.Get(l).Get(y) ) << "\n";
+			}
+
+		}
+		system("pause");
 	}
 
 
-
-
-
-	/*for (int i = 0; i < p_user_courses->size(); i++)
-	{
-	cout << "Course: " << p_user_courses[i] << "\n";
-	cout << subjects.Get(i).Get(i).Get(2);
-	cout << "\n";
-	system("pause");
-	}*/
-
-
-
-
-
-
-
-
-
-
-
-
-	system("pause");
 
 
 	return 0;

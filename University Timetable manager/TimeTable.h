@@ -134,7 +134,7 @@ public:
 		return time;
 	}
 
-	template<class T>
+
 	friend ostream & operator << (ostream &out, const TimeTable &t);
 
 	~TimeTable()
