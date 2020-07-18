@@ -222,10 +222,8 @@ int main()
 
 		// add array to "subjects" arr
 		for  (int a = 0; a < lec_tut.Size(); a++)
-		{
 			course_1.PushBack( lec_tut );
-			subjects.PushBack( course_1 );
-		}
+
 		if (lec_tut.Size() == 0)
 		{
 			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
@@ -243,6 +241,11 @@ int main()
 
 		}
 		system("pause");
+
+
+
+		if ( lec_tut.Size() != 0 )
+			subjects.PushBack( course_1 );
 	}
 
 
