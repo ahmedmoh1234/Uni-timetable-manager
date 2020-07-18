@@ -1,4 +1,5 @@
 #pragma once
+
 #include "string"
 #include "ENUM.h"
 #include "Functions.h"
@@ -24,6 +25,7 @@ public:
 	//char b is used to know if the class is either lecture or tutorial
 	//ex. the user will enter "MTHN102a l 8 11 sun" (a is the code to link the lecture with the tutorial, l is for lecture, t is for tutorial)
 
+	Course(std::string user_input);
 
 	const void print();
 	const void print_matrix();
@@ -46,6 +48,7 @@ public:
 
 	friend ostream & operator << (ostream &out, const Course &c);
 
+	friend ostream & operator << (ostream &out, const Course* &c);
 
 	~Course(void);
 };

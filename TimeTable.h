@@ -50,7 +50,7 @@ public:
 		int end = 0;
 		for (int i = 0; i < d1.Size(); i++)
 		{
-			
+
 		}
 
 
@@ -61,6 +61,10 @@ public:
 	bool AddCourse(Course* c)
 	{
 		int ** new_time;
+		new_time = new int* [5];
+		for (int  i = 0; i < 11; i++)
+			new_time[i] = new int [11];
+
 		if ( Add_Matrix_And_Check(time, c->getMatrix(), new_time) )
 		{
 			table.PushBack(c);
@@ -76,6 +80,10 @@ public:
 	bool AddTable (const TimeTable& t)
 	{
 		int ** new_time;
+		new_time = new int* [5];
+		for (int  i = 0; i < 11; i++)
+			new_time[i] = new int [11];
+
 		if ( Add_Matrix_And_Check( time, t.getTimeMatrix(), new_time ) )
 		{
 			for ( int  i = 0; i < t.table.Size(); i++ )
@@ -126,6 +134,8 @@ public:
 		return time;
 	}
 
+
+	friend ostream & operator << (ostream &out, const TimeTable &t);
 
 	~TimeTable()
 	{
