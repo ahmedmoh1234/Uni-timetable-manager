@@ -178,15 +178,14 @@ int main()
 	}
 
 	//-------------Organising courses into Subject (Lecture + tutorial)
-	DynArr< DynArr< DynArr<TimeTable*> > > subjects;
+	DynArr< DynArr<TimeTable*> >  subjects;
 
 	for (int i = 0; i < no_of_user_courses ; i++ )
 	{
-		DynArr< DynArr<TimeTable*> > course_1;
+		DynArr<TimeTable*> course_1;
 
 		DynArr<Course*> lec;
 		DynArr<Course*> tut;
-		DynArr<TimeTable*> lec_tut;
 
 		for (int j = 0; j < no_of_courses; j++)
 		{
@@ -215,21 +214,18 @@ int main()
 					TimeTable* t = new TimeTable();
 					t->AddCourse( lec.Get(j) );
 					t->AddCourse( tut.Get(k) );
-					lec_tut.PushBack( t );
+					course_1.PushBack( t );
 				}
 			}
 		}
 
 		// add array to "subjects" arr
-		for  (int a = 0; a < lec_tut.Size(); a++)
-			course_1.PushBack( lec_tut );
-
-		if (lec_tut.Size() == 0)
-		{
+		if  (course_1.Size() != 0)
+			subjects.PushBack( course_1 );
+		else
 			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
-		}
 
-		cout << "Printing Timetable contents: \n";
+		/*cout << "Printing Timetable contents: \n";
 		system("pause");
 
 		for (int l = 0; l < course_1.Size(); l++)
@@ -240,12 +236,11 @@ int main()
 			}
 
 		}
-		system("pause");
+		system("pause");*/
 
 
 
-		if ( lec_tut.Size() != 0 )
-			subjects.PushBack( course_1 );
+	
 	}
 
 
