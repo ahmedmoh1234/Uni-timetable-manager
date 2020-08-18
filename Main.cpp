@@ -225,18 +225,13 @@ int main()
 		else
 			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
 
-		/*cout << "Printing Timetable contents: \n";
+		cout << "Printing Timetable contents: \n";
 		system("pause");
 
 		for (int l = 0; l < course_1.Size(); l++)
-		{
-			for (int y = 0; y < course_1.Get(l).Size(); y++)
-			{
-				cout << *(course_1.Get(l).Get(y) ) << "\n";
-			}
+				cout << *(course_1.Get(l) ) << "\n";
 
-		}
-		system("pause");*/
+		system("pause");
 
 
 
