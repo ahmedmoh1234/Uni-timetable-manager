@@ -80,6 +80,22 @@ bool Add_Matrix_And_Check (int ** arr1, int ** arr2, int ** &arr3)	//i<5 & j<11
 	return true;
 }
 
+bool Check_If_Matrix_Added (int ** arr1, int ** arr2)	//i<5 & j<11
+{
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 11; j++)
+		{
+			int a = arr1[i][j] + arr2[i][j];
+			if ( a > 1)
+				return false;
+		}
+
+	}
+
+	return true;
+}
+
 //Course* Make_Courses_Package (string* user_courses, Course* av_courses)
 //{
 //
