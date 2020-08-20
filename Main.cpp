@@ -225,6 +225,8 @@ int main()
 		else
 			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
 
+		
+		// Printing the Timetable of the course
 		cout << "Printing Timetable contents: \n";
 		system("pause");
 
@@ -232,13 +234,9 @@ int main()
 				cout << *(course_1.Get(l) ) << "\n";
 
 		system("pause");
-
-
-
-	
 	}
 
-
+	//Adding each course lec & tut to other courses
 
 
 	return 0;

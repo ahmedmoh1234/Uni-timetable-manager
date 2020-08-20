@@ -77,20 +77,70 @@ public:
 
 	}
 
-	bool AddTable (const TimeTable& t)
+	bool AddTable (const TimeTable& t) //Tested and working. Works both ways ( t1.Addtable(t2) == t2.AddTable(t1) )
 	{
+		DynArr<Course*> new_temp;
+
 		int ** new_time;
 		new_time = new int* [5];
 		for (int  i = 0; i < 11; i++)
 			new_time[i] = new int [11];
 
+		if (table.Size() == 0)//POSSIBLE ERROR
+		{
+			table = t.table;
+			return true;
+		}
+
+		if(t.table.Size() == 0)
+			return true;
+
 		if ( Add_Matrix_And_Check( time, t.getTimeMatrix(), new_time ) )
 		{
-			for ( int  i = 0; i < t.table.Size(); i++ )
+
+			int i = 0;
+			int k = 0;
+
+			while ( i < table.Size() && k < t.table.Size() )
 			{
-				table.PushBack( t.table.Get(i) );
+				if ( table.Get(i)->getDay() < t.table.Get(k)->getDay() )
+				{
+					new_temp.PushBack( table.Get(i) );
+					i++;
+				}
+				else if ( table.Get(i)->getDay() == t.table.Get(k)->getDay() )
+				{
+					if ( table.Get(i)->getStartTime() < t.table.Get(k)->getStartTime() )
+					{
+						new_temp.PushBack( table.Get(i) );
+						i++;
+					}
+					else
+					{
+						new_temp.PushBack( t.table.Get(k) );
+						k++;
+					}
+				}
+				else
+				{
+					new_temp.PushBack( t.table.Get(k) );
+					k++;
+				}
+			}
+			//Check if i or j reached the maximum
+			while ( i < table.Size() )
+			{
+				new_temp.PushBack( table.Get(i) );
+				i++;
 			}
 
+			while ( k < t.table.Size() )
+			{
+				new_temp.PushBack( t.table.Get(k) );
+				k++;
+			}
+
+			table = new_temp;
 			time = new_time;
 			return true;
 		}
