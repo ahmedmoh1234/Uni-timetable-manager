@@ -245,13 +245,23 @@ int main()
 		//cout << "\nTutorials : " << tut << "\n";
 		//system("pause");
 
+		/*
 		int** mm;
 		mm = new int* [5];
 		for (int i = 0; i < 5; i++)
 			mm[i] = new int[11];
+		*/
 
+		//===========Adding lectures and tutorials together
 		for (int j = 0; j < lec.Size(); j++)
 		{
+			if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')
+			{
+				TimeTable* t = new TimeTable();
+				t->AddCourse(lec.Get(j));
+				course_1.PushBack(t);
+				continue;
+			}
 			for (int k = 0; k < tut.Size(); k++)
 			{
 
