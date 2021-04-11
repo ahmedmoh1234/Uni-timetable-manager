@@ -5,6 +5,7 @@
 #include "ENUM.h"
 #include "Course.h"
 
+
 using namespace std;
 
 
@@ -24,4 +25,3 @@ bool Add_Matrix_And_Check (int ** arr1, int ** arr2, int ** &arr3);	//Tested and
 bool Check_If_Matrix_Added (int ** arr1, int ** arr2);	//Tested and working
 
 //Course* Make_Courses_Package (string* user_courses, Course* av_courses);
-

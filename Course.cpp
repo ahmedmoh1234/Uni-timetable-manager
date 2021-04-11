@@ -33,7 +33,7 @@ Course::Course(std::string s, char c, int st, int et, char b, Day d)
 
 	//----------------Creating 2D array-----------
 	matrix_of_time = new int* [5];
-	for (int  i = 0; i < 11; i++)
+	for (int  i = 0; i < 5; i++)
 		matrix_of_time[i] = new int [11];
 	//--------------------------------------------
 
@@ -96,7 +96,7 @@ Course::Course(std::string user_input)
 	end_time	= et;
 
 	matrix_of_time = new int* [5];
-	for (int  i = 0; i < 11; i++)
+	for (int  i = 0; i < 5; i++)
 		matrix_of_time[i] = new int [11];
 	//--------------------------------------------
 	Day d				= Read_Day_From_String( user_input.substr(17,3) );
@@ -126,7 +126,7 @@ Course::Course(std::string user_input)
 		}
 	}
 
-	
+
 }
 
 
@@ -212,8 +212,8 @@ Course::~Course(void)
 {
 	for ( int i = 0; i < 5; i++)
 	{
-		delete [] matrix_of_time[i];
+		//delete [] matrix_of_time[i];
 	}
-	delete [] matrix_of_time;
+	//delete [] matrix_of_time;
 
 }

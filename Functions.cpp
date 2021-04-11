@@ -3,7 +3,7 @@
 
 void Convert_String_To_Uppercase (string& s)			
 {
-	for (int i = 0; i<s.length(); i++)
+	for (int i = 0; i < s.length(); i++)
 	{s[i] = toupper(s[i]);}
 
 }
@@ -100,3 +100,5 @@ bool Check_If_Matrix_Added (int ** arr1, int ** arr2)	//i<5 & j<11
 //{
 //
 //}
+
+

@@ -4,6 +4,7 @@ mthn102a l 08 11 sun
 phyn102a l 08 11 sun 
 genn102a l 09 11 sun 
 cmpn101b t 11 13 sun 
+elcn102e l 13 15 sun 
 cmpn103c l 11 13 mon 
 mthn103d t 09 11 tue 
 mthn103a t 09 11 tue 

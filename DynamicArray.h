@@ -22,7 +22,7 @@ public:
 	{
 		if ( index < 0 || index >= size)
 		{
-
+			//throw;
 		}
 		else
 			return darr[index];
@@ -51,7 +51,7 @@ public:
 				arr_new[i] = darr[i];
 			}
 
-			delete darr;
+			//delete [] darr;
 			darr = arr_new;
 			capacity = capacity * 2;
 		}
@@ -63,15 +63,21 @@ public:
 
 	bool Remove(int index)
 	{
-		if ( index < 0 || index >= size)
+		if ( index < 0 || index >= this->size)
 		{
 			return false;
 		}
 		else
 		{
-			for (int i = index; i < size - 2; i++)
-				darr[i] = darr[i-1];
-			size--;
+			if (index == this->size - 1)
+			{
+				//darr[index] = nullptr;
+				this->size--;
+				return true;
+			}
+			for (int i = index; i <= this->size - 2; i++)
+				darr[i] = darr[i+1];
+			this->size--;
 			return true;
 		}
 
@@ -105,6 +111,7 @@ public:
 	template<class T>
 	friend ostream & operator << (ostream &out, const DynArr<T> &c);
 
+	template<class T>
 	friend ostream & operator << (ostream &out, const DynArr<T*> &c);
 	
 	~DynArr()
