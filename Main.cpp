@@ -99,6 +99,7 @@ int main()
 {
 
 	//----------------------------------------a few messages for the user
+	/*
 	cout << "This program is used to create for you the University timetable" << endl;
 	cout << "THIS PROGRAM IS NOT GUARANTEED!!!, YOU MUST VERIFY THE TIMETABLE ON THE WEBSITE " << endl;
 	cout << "USE IT AT YOUR OWN RISK " << endl;
@@ -106,7 +107,7 @@ int main()
 	cout << "\n";
 	cout << "Please read the instructions carefully" << endl;
 	cout << "\n";
-
+	*/
 	///-----------------------------Getting inputs and adding them to an array
 	cout << "Please enter: " << endl;
 	cout << "1. lecture code + a unique letter to link it with a tutorial. " << endl;
