@@ -92,12 +92,13 @@ ostream& operator << (ostream& out, const Course*& c)		//Working
 
 DynArr<string> FileReader();
 
+DynArr<string> fileReadProcess( const DynArr<string>& read );
 
 void resetIndex(int v, DynArr<int>& indices, const DynArr< DynArr<TimeTable*> >& subjects, bool& end);
 
 int main()
 {
-
+	system("title University Timetable Manager");
 	//----------------------------------------a few messages for the user
 	/*
 	cout << "This program is used to create for you the University timetable" << endl;
@@ -122,11 +123,13 @@ int main()
 	DynArr<string> input_courses;
 
 	input_courses = FileReader();
+	//fileReadProcess(input_courses);
 	/*
 	string user_input;
 	getline(cin, user_input,';');
 	*/
 
+	/*
 	bool wantFreeDay;
 	char ans;
 	cout << "Do you want a freeday ? (y/n) : ";
@@ -143,7 +146,7 @@ int main()
 	int maxNoOfGapHours;
 	cout << "Enter the maximum amount of gap hours per day : ";
 	cin >> maxNoOfGapHours;
-
+	*/
 	Course* courses[200];
 	int no_of_courses = 0;
 
@@ -152,7 +155,30 @@ int main()
 		courses[no_of_courses] = new Course(input_courses.Get(i));
 		no_of_courses++;
 	}
-
+	//Sorting the courses
+	for (int i = 0; i < no_of_courses; i++)
+	{
+		for (int j = i; j < no_of_courses; j++)
+		{
+			if ( courses[j]->getDay() < courses[i]->getDay() )
+			{
+				Course* temp;
+				temp = courses[i];
+				courses[i] = courses[j];
+				courses[j] = temp;
+			}
+			else if ( courses[j]->getDay() == courses[i]->getDay() ) 
+			{
+				if ( courses[j]->getStartTime() < courses[i]->getStartTime() )
+				{
+					Course* temp;
+					temp = courses[i];
+					courses[i] = courses[j];
+					courses[j] = temp;
+				}
+			}
+		}
+	}
 	//courses[no_of_courses]->print_matrix(); //////testing
 
 	/*
@@ -220,7 +246,7 @@ int main()
 	}
 
 	//-------------Organising courses into Subject (Lecture + tutorial)
-	//PROBLEM : at the end of the first lecture, the timetable duplicates
+	//PROBLEM : at the end of the first lecture, the timetable duplicates // SOLVED
 	DynArr< DynArr<TimeTable*> >  subjects;
 
 	for (int i = 0; i < no_of_user_courses; i++)
@@ -281,10 +307,11 @@ int main()
 		subjects.PushBack(course_1);
 		if (course_1.Size() == 0)
 			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
+		/*
 		else
 			// Printing the Timetable of the course
 			cout << "Printing Timetable contents of " << p_user_courses[i] << ": \n";
-
+		*/
 		//system("pause");
 
 		for (int l = 0; l < course_1.Size(); l++)
@@ -295,8 +322,8 @@ int main()
 
 	//Adding each course lec & tut to other courses
 	time_t stime = time(NULL);
-	int totalTables = 0;
 
+	DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
 
 	if (subjects.Size() != 0)
 	{
@@ -317,9 +344,9 @@ int main()
 		//int v = 0;
 
 
-		int Counter = 0;
 		bool dismissed = false;
 
+		
 
 		while (indices.Get(0) < subjects.Get(0).Size() && !end) //REMEMBER Size is more than the indices by 1
 		{
@@ -337,82 +364,56 @@ int main()
 			}
 			if (!dismissed)
 			{
-				bool freeday = false;
-				if (wantFreeDay)
-				{
-					int sum;
-					for (int h = 0; h < 5; h++)
-					{
-						sum = 0;
-						for (int w = 0; w < 11; w++)
-						{
-							sum += (temp.getTimeMatrix())[h][w];
-						}
-						if (sum == 0)
-						{
-							freeday = true;
-							break;
-						}
-					}
-				}
-				else
-					freeday = true;
-
-
-					/*
-					int oneCount;
-					int zeroCount;
-					bool notEnough = false;
-					for (int h = 0; h < 5; h++)
-					{
-						oneCount = 0;
-						zeroCount = 0;
-						for (int w = 0; w < 11; w++)
-						{
-							oneCount += (temp.getTimeMatrix())[h][w];
-
-							if ( (temp.getTimeMatrix() )[h][w] == 0 )
-							{
-								zeroCount++;
-								if (w > 0 && (temp.getTimeMatrix())[h][w-1] == 1 && oneCount > 0 && zeroCount > maxNoOfGapHours)
-								{
-									notEnough = true;
-									break;
-								}
-							}
-						}
-						if (oneCount < minHoursPerDay)
-						{
-							notEnough = true;
-							break;
-						}
-					}
-					*/
-				if (freeday) // freeday // !notEnough
-				{
-					Counter++;
-					cout << "\n";
-					cout << "\n";
-					cout << "======================================================================================================================\n";
-					cout << "Table number " << Counter << "\n" << temp << "\n";
-					temp.PrintMatrix();
-					cout << "======================================================================================================================\n";
-					
-					
-				}
-				totalTables = Counter;
+				finalTables.PushBack(temp);
 			}
 			dismissed = false;
 			resetIndex(subjects.Size() - 1, indices, subjects, end);
+		} 
+	}
+
+	//Sorting final tables according to the noOfFreeDays and noOfGaps
+	for (int i = 0; i < finalTables.Size(); i++)
+	{
+		for (int j = i; j < finalTables.Size(); j++)
+		{
+			if ( finalTables.Get(j).getNoOfFreeDays() < finalTables.Get(i).getNoOfFreeDays() )
+			{
+				TimeTable temp;
+				temp = finalTables.Get(j);
+				finalTables.Set(j, finalTables.Get(i));
+				finalTables.Set(i, temp);
+			}
+			else if ( finalTables.Get(j).getNoOfFreeDays() == finalTables.Get(i).getNoOfFreeDays() )
+			{
+				if ( finalTables.Get(j).getNoOfGaps() < finalTables.Get(i).getNoOfGaps() )
+				{
+					TimeTable temp;
+					temp = finalTables.Get(j);
+					finalTables.Set(j, finalTables.Get(i));
+					finalTables.Set(i, temp);
+				}
+			}
 		}
 	}
 
 
+	//Printing the sorted timetables
+	for (int i = 0; i < finalTables.Size(); i++ )
+	{
+		cout << "\n";
+		cout << "\n";
+		cout << "======================================================================================================================\n";
+		cout << "Table number " << i+1 << "\n" << finalTables.Get(i) << "\n";
+		finalTables.Get(i).PrintMatrix();
+		cout <<"\nNo of Gaps = " << finalTables.Get(i).getNoOfGaps();
+		cout << "\nNo of free days = " << finalTables.Get(i).getNoOfFreeDays() << "\n";
+		cout << "======================================================================================================================\n";
+	}
 	time_t etime = time(NULL);
 	double diff = difftime(etime, stime);
 	cout << "The Program took " << (diff) << " seconds.\n";
 
-	cout << "Total number of tables = " << totalTables << "\n";
+	cout << "Total number of tables = " << finalTables.Size() << "\n";
 	cout << "Finished!! =)\n";
 	system("pause");
 	return 0;
@@ -424,8 +425,20 @@ DynArr<string> FileReader()
 
 	string in;
 	getline(cin, in);
-	in += ".txt";
-	cout << in << "\n";
+
+	//cout << "\n " << in.size() << "\n";
+	if (in[0] == '"')
+		in.erase(0,1);
+	if (in[in.size()-1] == '"')
+		in.erase(in.size()-1,1);
+	//cout << "\n " << in.size() << "\n" << in.substr(in.size()-4,4) << "\n";
+	if (in.size()-4 < 0)
+		in += ".txt";
+	else if (in.substr(in.size()-4,4) != ".txt")
+		in += ".txt";
+
+	int pos = in.find_last_of('\\');	//Returns the position of the last '\', or npos if not found
+	cout << in.substr(pos+1) << "\n";
 
 	ifstream input;
 	input.open(in);
@@ -448,6 +461,26 @@ DynArr<string> FileReader()
 		getline(input, a);
 		if (a != temp)
 			result.PushBack(a);
+	}
+	return result;
+}
+
+DynArr<string> fileReadProcess( const DynArr<string>& read ) // need to be implemented
+{
+	DynArr<string> result;
+	for (int i = 0; i < read.Size(); i++)
+	{
+		string temp;
+		temp = read.Get(i);
+		int spaceCount = 0;
+		for (int j = 0; j < temp.length() - 1; j++)
+		{
+
+			if ( temp.substr(j,2) == "\t")
+				cout << "tab found";
+		}
+		cout <<  temp;
+		system("pause");
 	}
 	return result;
 }

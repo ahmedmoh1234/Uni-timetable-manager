@@ -377,6 +377,55 @@ public:
 
 	friend ostream& operator << (ostream& out, const TimeTable& t);
 
+	int getNoOfGaps()
+	{
+		int result = 0;
+
+		for (int i = 0; i < 5; i++)
+		{
+			int firstOneInd = -1;
+			int lastOneInd = -1;
+			for (int j = 0; j < 11; j++)
+			{
+				if ( time[i][j] == 1 && firstOneInd == -1)
+				{
+					firstOneInd = j;
+					lastOneInd = j;
+				}
+				else if ( time[i][j] == 1 && firstOneInd != -1)
+				{
+					lastOneInd = j;
+				}
+			}
+
+			for (int j = firstOneInd; j < lastOneInd; j++)
+			{
+				if ( time[i][j] == 0 )
+					result++;
+			}
+		}
+		return result;
+	}
+
+
+	int getNoOfFreeDays()
+	{
+		int result = 0;
+
+		for (int i = 0; i < 5; i++)
+		{
+			int temp = 0;
+			for (int j = 0; j < 11; j++)
+			{
+				temp += time[i][j];
+			}
+
+			if ( temp == 0 )
+				result++;
+		}
+		return result;
+	}
+
 	~TimeTable()
 	{
 
