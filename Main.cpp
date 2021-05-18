@@ -371,12 +371,12 @@ int main()
 		} 
 	}
 
-	//Sorting final tables according to the noOfFreeDays and noOfGaps
+	//Sorting final tables according to the noOfFreeDays and noOfGaps DESCENDINGLY
 	for (int i = 0; i < finalTables.Size(); i++)
 	{
 		for (int j = i; j < finalTables.Size(); j++)
 		{
-			if ( finalTables.Get(j).getNoOfFreeDays() < finalTables.Get(i).getNoOfFreeDays() )
+			if ( finalTables.Get(j).getNoOfFreeDays() > finalTables.Get(i).getNoOfFreeDays() )
 			{
 				TimeTable temp;
 				temp = finalTables.Get(j);
@@ -385,7 +385,7 @@ int main()
 			}
 			else if ( finalTables.Get(j).getNoOfFreeDays() == finalTables.Get(i).getNoOfFreeDays() )
 			{
-				if ( finalTables.Get(j).getNoOfGaps() < finalTables.Get(i).getNoOfGaps() )
+				if ( finalTables.Get(j).getNoOfGaps() > finalTables.Get(i).getNoOfGaps() )
 				{
 					TimeTable temp;
 					temp = finalTables.Get(j);
@@ -404,7 +404,7 @@ int main()
 		cout << "\n";
 		cout << "======================================================================================================================\n";
 		cout << "Table number " << i+1 << "\n" << finalTables.Get(i) << "\n";
-		finalTables.Get(i).PrintMatrix();
+		//finalTables.Get(i).PrintMatrix();
 		cout <<"\nNo of Gaps = " << finalTables.Get(i).getNoOfGaps();
 		cout << "\nNo of free days = " << finalTables.Get(i).getNoOfFreeDays() << "\n";
 		cout << "======================================================================================================================\n";
