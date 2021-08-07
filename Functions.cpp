@@ -1,62 +1,76 @@
 #include "Functions.h"
 
 
-void Convert_String_To_Uppercase (string& s)			
+void Convert_String_To_Uppercase(string& s)
 {
 	for (int i = 0; i < s.length(); i++)
-	{s[i] = toupper(s[i]);}
+	{
+		s[i] = toupper(s[i]);
+	}
 
 }
 
-void Convert_String_To_Uppercase (char& s)
+void Convert_String_To_Uppercase(char& s)
 {
 	s = toupper(s);
 }
 
-Day Read_Day_From_String (string s)			
+Day Read_Day_From_String(string s)
 {
 	Convert_String_To_Uppercase(s);
 	Day d;
-	
+
 	if (s == "SAT")
-	{d = Saturday;}
+	{
+		d = Saturday;
+	}
 	else if (s == "SUN")
-	{d = Sunday;}
+	{
+		d = Sunday;
+	}
 	else if (s == "MON")
-	{d = Monday;}
+	{
+		d = Monday;
+	}
 	else if (s == "TUE")
-	{d = Tuesday;}
+	{
+		d = Tuesday;
+	}
 	else if (s == "WED")
-	{d = Wednesday;}
+	{
+		d = Wednesday;
+	}
 	else if (s == "THU")
-	{d = Thursday;}
+	{
+		d = Thursday;
+	}
 	return d;
 }
 
-void Print_Day_From_Day (Day d)			
+void Print_Day_From_Day(Day d)
 {
 	if (d == 0)
 		cout << "Saturday   ";
-	else if ( d == 1)
+	else if (d == 1)
 		cout << "Sunday   ";
-	else if ( d == 2)
+	else if (d == 2)
 		cout << "Monday   ";
-	else if ( d == 3)
+	else if (d == 3)
 		cout << "Tuesday   ";
-	else if ( d == 4)
+	else if (d == 4)
 		cout << "Wednesday   ";
-	else if ( d == 5)
+	else if (d == 5)
 		cout << "Thursday   ";
 }
 
 
-void Print_2D_Matrix ( int ** arr, int rows, int cols )
+void Print_2D_Matrix(char** arr, int rows, int cols)
 {
-	for ( int i = 0; i < rows; i++)
+	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			cout << arr[i][j] << " " ;
+			cout << arr[i][j] << " ";
 		}
 
 		cout << "\n";
@@ -64,14 +78,14 @@ void Print_2D_Matrix ( int ** arr, int rows, int cols )
 	cout << "\n";
 }
 
-bool Add_Matrix_And_Check (int ** arr1, int ** arr2, int ** &arr3)	//i<5 & j<11
+bool Add_Matrix_And_Check(int** arr1, int** arr2, int**& arr3)	//i<5 & j<11
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < ROW_COUNT; i++)
 	{
-		for (int j = 0; j < 11; j++)
+		for (int j = 0; j < COL_COUNT; j++)
 		{
 			arr3[i][j] = arr1[i][j] + arr2[i][j];
-			if ( arr3[i][j] > 1)
+			if (arr3[i][j] > 1)
 				return false;
 		}
 
@@ -80,15 +94,40 @@ bool Add_Matrix_And_Check (int ** arr1, int ** arr2, int ** &arr3)	//i<5 & j<11
 	return true;
 }
 
-bool Check_If_Matrix_Added (int ** arr1, int ** arr2)	//i<5 & j<11
+bool Check_If_Matrix_Added(int** arr1, int** arr2)	//i<5 & j<11
 {
-	for (int i = 0; i < 5; i++)
+	/*cout << "\n Matrix 1\n";
+	for (int i = 0; i < ROW_COUNT; i++)
 	{
-		for (int j = 0; j < 11; j++)
+		for (int j = 0; j < COL_COUNT; j++)
 		{
-			int a = arr1[i][j] + arr2[i][j];
-			if ( a > 1)
+			cout << arr1[i][j] << " ";
+		}
+		cout << "\n";
+
+	}
+
+
+	cout << "\n Matrix 2\n";
+	for (int i = 0; i < ROW_COUNT; i++)
+	{
+		for (int j = 0; j < COL_COUNT; j++)
+		{
+			cout << arr2[i][j] << " ";
+		}
+		cout << "\n";
+
+	}*/
+
+	for (int i = 0; i < ROW_COUNT; i++)
+	{
+		for (int j = 0; j < COL_COUNT; j++)
+		{
+			char a = arr1[i][j] + arr2[i][j];
+			if (a > 1)
+			{
 				return false;
+			}
 		}
 
 	}

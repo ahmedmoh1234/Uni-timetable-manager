@@ -13,13 +13,13 @@ public:
 	TimeTable()
 	{
 		//----------------Creating 2D array-----------
-		time = new int* [5];
-		for (int i = 0; i < 5; i++)
-			time[i] = new int[11];
+		time = new int* [ROW_COUNT];
+		for (int i = 0; i < ROW_COUNT; i++)
+			time[i] = new int[COL_COUNT];
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ROW_COUNT; i++)
 		{
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j < COL_COUNT; j++)
 			{
 				time[i][j] = 0;
 			}
@@ -61,9 +61,9 @@ public:
 	bool AddCourse(Course* c)
 	{
 		int** new_time;
-		new_time = new int* [5];
-		for (int i = 0; i < 5; i++)
-			new_time[i] = new int[11];
+		new_time = new int* [ROW_COUNT];
+		for (int i = 0; i < ROW_COUNT; i++)
+			new_time[i] = new int[COL_COUNT];
 
 		if (table.Size() == 0)
 		{
@@ -137,17 +137,17 @@ public:
 		DynArr<Course*> new_temp;
 
 		int** new_time;
-		new_time = new int* [5];
-		for (int i = 0; i < 5; i++)
-			new_time[i] = new int[11];
+		new_time = new int* [ROW_COUNT];
+		for (int i = 0; i < ROW_COUNT; i++)
+			new_time[i] = new int[COL_COUNT];
 
 		if (table.Size() == 0)//POSSIBLE ERROR
 		{
 			table = t.table;
 			int** tblTime = t.getTimeMatrix();
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < ROW_COUNT; i++)
 			{
-				for (int j = 0; j < 11; j++)
+				for (int j = 0; j < COL_COUNT; j++)
 				{
 					this->time[i][j] = tblTime[i][j];
 				}
@@ -208,9 +208,9 @@ public:
 
 			table = new_temp;
 			//time = new_time;
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < ROW_COUNT; i++)
 			{
-				for (int j = 0; j < 11; j++)
+				for (int j = 0; j < COL_COUNT; j++)
 				{
 					this->time[i][j] = new_time[i][j];
 				}
@@ -228,21 +228,26 @@ public:
 		DynArr<Course*> new_temp;
 
 		int** new_time;
-		new_time = new int* [5];
-		for (int i = 0; i < 5; i++)
-			new_time[i] = new int[11];
+		new_time = new int* [ROW_COUNT];
+		for (int i = 0; i < ROW_COUNT; i++)
+			new_time[i] = new int[COL_COUNT];
 
 		if (table.Size() == 0)//POSSIBLE ERROR
 		{
 			table = t->table;
+			//this->time = std::move(t->time);
 			int** tblTime = t->getTimeMatrix();
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < ROW_COUNT; i++)
 			{
-				for (int j = 0; j < 11; j++)
+				for (int j = 0; j < COL_COUNT; j++)
 				{
 					this->time[i][j] = tblTime[i][j];
 				}
 			}
+			
+			/*for (int i = 0; i < 5; i++)
+				delete[] t->time[i];
+			delete[] t->time;*/
 			return true;
 		}
 
@@ -295,9 +300,9 @@ public:
 			}
 			table = new_temp;
 			//time = new_time;
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < ROW_COUNT; i++)
 			{
-				for (int j = 0; j < 11; j++)
+				for (int j = 0; j < COL_COUNT; j++)
 				{
 					this->time[i][j] = new_time[i][j];
 				}
@@ -314,9 +319,9 @@ public:
 	{
 		cout << table;
 		cout << "\n";
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ROW_COUNT; i++)
 		{
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j < COL_COUNT; j++)
 			{
 				cout << time[i][j] << " ";
 			}
@@ -326,9 +331,9 @@ public:
 
 	void PrintMatrix()
 	{
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ROW_COUNT; i++)
 		{
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j < COL_COUNT; j++)
 			{
 				cout << time[i][j] << " ";
 			}
@@ -359,9 +364,9 @@ public:
 		*/
 
 		table = dynarr;
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ROW_COUNT; i++)
 		{
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j < COL_COUNT; j++)
 			{
 				this->time[i][j] = 0;
 			}
@@ -381,11 +386,11 @@ public:
 	{
 		int result = 0;
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ROW_COUNT; i++)
 		{
 			int firstOneInd = -1;
 			int lastOneInd = -1;
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j < COL_COUNT; j++)
 			{
 				if ( time[i][j] == 1 && firstOneInd == -1)
 				{
@@ -412,10 +417,10 @@ public:
 	{
 		int result = 0;
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ROW_COUNT; i++)
 		{
 			int temp = 0;
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j < COL_COUNT; j++)
 			{
 				temp += time[i][j];
 			}

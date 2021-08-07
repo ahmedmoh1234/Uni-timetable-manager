@@ -4,6 +4,9 @@
 #include "ENUM.h"
 #include "Functions.h"
 #include <iostream>
+
+const int ROW_COUNT = 5;
+const int COL_COUNT = 14;
 using namespace std;
 
 class Course 
@@ -49,6 +52,10 @@ public:
 	friend ostream & operator << (ostream &out, const Course &c);
 
 	friend ostream & operator << (ostream &out, const Course* &c);
+
+	friend bool operator < (Course c1,Course c2);
+
+	//bool operator== (Course* c2);
 
 	~Course(void);
 };

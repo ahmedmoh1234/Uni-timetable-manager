@@ -1,17 +1,21 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <time.h>
+#include <sstream> 
+#include <set>
 
 #include "ENUM.h"
 #include "Functions.h"
 #include "Course.h"
 #include "DynamicArray.h"
 #include "TimeTable.h"
+#include <unordered_set>
 
 using namespace std;
+
 
 
 template<class T>
@@ -90,15 +94,43 @@ ostream& operator << (ostream& out, const Course*& c)		//Working
 	return out;
 }
 
-DynArr<string> FileReader();
+vector<string> FileReader();
 
-DynArr<string> fileReadProcess( const DynArr<string>& read );
+vector<string> fileReadProcess( const vector<string>& read );
+
+bool operator < (Course c1, Course c2)
+{
+	if (c1.getCourse() < c2.getCourse())
+	{
+		return true;
+	}
+
+	else if (c1.getCourse() == c2.getCourse())
+	{
+		if (c1.getDay() < c2.getDay())
+		{
+			return true;
+		}
+		else if (c1.getDay() == c2.getDay())
+		{
+			if (c1.getStartTime() < c2.getStartTime())
+			{
+				return true;
+			}
+		}
+
+	}
+
+	return false;
+}
 
 void resetIndex(int v, DynArr<int>& indices, const DynArr< DynArr<TimeTable*> >& subjects, bool& end);
 
+
+
 int main()
 {
-	system("title University Timetable Manager");
+	system("title University Timetable Manager V1");
 	//----------------------------------------a few messages for the user
 	/*
 	cout << "This program is used to create for you the University timetable" << endl;
@@ -110,75 +142,56 @@ int main()
 	cout << "\n";
 	*/
 	///-----------------------------Getting inputs and adding them to an array
-	cout << "Please enter: " << endl;
-	cout << "1. lecture code + a unique letter to link it with a tutorial. " << endl;
-	cout << "2. 'l' for lecture OR 't' for tutorial " << endl;
-	cout << "3. Start time + End time (Both in 24-hour format)" << endl;
-	cout << "4. Day (sat/sun/mon/tue/wed/thu)" << endl;
-	cout << "ex. MTHN102a l 08 11 sun	(REMEMBER, use the letter 'a' with the same tutorial. 'a' can be any letter EXCEPT z). If the Course has no tutorial, enter letter z" << endl;
-	//			 01234567890123456789
-	cout << "YOU NEED TO WRITE A LETTER EVEN IF THERE IS NO TUTORIAL (like GENNs)" << endl;
-	cout << "\n";
+	//cout << "Please enter: " << endl;
+	//cout << "1. lecture code + a unique letter to link it with a tutorial. " << endl;
+	//cout << "2. 'l' for lecture OR 't' for tutorial " << endl;
+	//cout << "3. Start time + End time (Both in 24-hour format)" << endl;
+	//cout << "4. Day (sat/sun/mon/tue/wed/thu)" << endl;
+	//cout << "ex. MTHN102a l 08 11 sun	(REMEMBER, use the letter 'a' with the same tutorial. 'a' can be any letter EXCEPT z). If the Course has no tutorial, enter letter z" << endl;
+	////			 01234567890123456789
+	//cout << "YOU NEED TO WRITE A LETTER EVEN IF THERE IS NO TUTORIAL (like GENNs)" << endl;
+	//cout << "\n";
 
-	DynArr<string> input_courses;
+	cout << "1. Open the student portal and login\n";
+	cout << "2. Open ""Registration Status Report""  \n";
+	cout << "3. Select all (CTRL + A) then copy (CTRL + C)\n";
+	cout << "4. Open a notepad and paste the copied data into it and save it\n";
+	cout << "5. Press ""SHIFT + Right mouse click"" on the saved notepad\n";
+	cout << "6. Press on ""Copy as path""\n";
+	cout << "7. Run the program, paste the path and follow the instructions\n";
+
+	vector<string> input_courses;
 
 	input_courses = FileReader();
-	//fileReadProcess(input_courses);
-	/*
-	string user_input;
-	getline(cin, user_input,';');
-	*/
-
-	/*
-	bool wantFreeDay;
-	char ans;
-	cout << "Do you want a freeday ? (y/n) : ";
-	cin >> ans;
-	if (ans == 'y' || ans == 'Y')
-		wantFreeDay = true;
-	else
-		wantFreeDay = false;
-
-	int minHoursPerDay;
-	cout << "Enter the minimum amount of hours per day : ";
-	cin >> minHoursPerDay;
-
-	int maxNoOfGapHours;
-	cout << "Enter the maximum amount of gap hours per day : ";
-	cin >> maxNoOfGapHours;
-	*/
-	Course* courses[200];
-	int no_of_courses = 0;
-
-	for (int i = 0; i < input_courses.Size(); i++)
+	cout << "Please Wait\n";
+	input_courses = fileReadProcess(input_courses);
+	
+	
+	vector<Course> courses;
+	
+	for (int i = 0; i < input_courses.size(); i++)
 	{
-		courses[no_of_courses] = new Course(input_courses.Get(i));
-		no_of_courses++;
+		courses.push_back( Course(input_courses[i]) );
 	}
-	//Sorting the courses
-	for (int i = 0; i < no_of_courses; i++)
-	{
-		for (int j = i; j < no_of_courses; j++)
-		{
-			if ( courses[j]->getDay() < courses[i]->getDay() )
-			{
-				Course* temp;
-				temp = courses[i];
-				courses[i] = courses[j];
-				courses[j] = temp;
-			}
-			else if ( courses[j]->getDay() == courses[i]->getDay() ) 
-			{
-				if ( courses[j]->getStartTime() < courses[i]->getStartTime() )
-				{
-					Course* temp;
-					temp = courses[i];
-					courses[i] = courses[j];
-					courses[j] = temp;
-				}
-			}
-		}
-	}
+
+	
+	//Sorting courses and removing duplicates
+	set<Course> s(courses.begin(), courses.end());
+	courses.assign(s.begin(), s.end());
+	//for (int i = 0; i < courses.size(); i++)
+	//{
+	//	s.insert(courses[i]);
+	//}
+	//cout << s.size() << "\n";;
+	//courses.assign(s.begin(), s.end());
+	//cout << courses.size() << "\n";
+	//courses.shrink_to_fit();
+	//cout << courses.size() << "\n";
+	//system("pause");
+
+	//===============================TO BE DONE============= Add a functor for comparison between courses
+
+
 	//courses[no_of_courses]->print_matrix(); //////testing
 
 	/*
@@ -202,34 +215,41 @@ int main()
 	}
 	*/
 	//------------------------------Printing inputs
-	for (int i = 0; i < no_of_courses; i++)
+	for (int i = 0; i < courses.size(); i++)
 	{
-		courses[i]->print();
+		cout << i+1 << " ";
+		courses[i].print();
 		//courses[i]->print_matrix();////////////////////////////////////////
 	}
 
 	cout << "\n";
-
+	
 	//-----------------Getting the courses the user want to enroll at
+	/*
 	int no_of_user_courses;
 	cout << "Please enter the number of courses you want: ";
 	cin >> no_of_user_courses;
 
 	string* p_user_courses = new string[no_of_user_courses];
-
+	*/
+	vector<string> p_user_courses;
 	cout << "Please enter the courses you want ";
 	cout << "\n";
 	cout << "enter each course then press enter";
 	cout << "\n";
-
-	for (int i = 0; i < no_of_user_courses; i++)
+	cout << "Enter 0 when you finish";
+	cout << "\n";
+	string temp1 = "";
+	int userCount = 0;
+	cout << userCount + 1 << " ";
+	cin >> temp1;
+	while (temp1 != "0")
 	{
-		string temp1;
-		cout << i + 1 << " ";
-		cin >> temp1;
 		Convert_String_To_Uppercase(temp1);
-		p_user_courses[i] = temp1;
-
+		p_user_courses.push_back(temp1);
+		userCount++;
+		cout << userCount + 1 << " ";
+		cin >> temp1;
 	}
 
 
@@ -238,33 +258,35 @@ int main()
 	cout << "The courses you entered are: ";
 	cout << "\n";
 
-	for (int i = 0; i < no_of_user_courses; i++)
+	for (int i = 0; i < p_user_courses.size(); i++)
 	{
 		cout << i + 1 << " " << p_user_courses[i];
 		cout << "\n";
 
 	}
+	
+	
 
 	//-------------Organising courses into Subject (Lecture + tutorial)
 	//PROBLEM : at the end of the first lecture, the timetable duplicates // SOLVED
 	DynArr< DynArr<TimeTable*> >  subjects;
 
-	for (int i = 0; i < no_of_user_courses; i++)
+	for (int i = 0; i < p_user_courses.size(); i++)
 	{
 		DynArr<TimeTable*> course_1;
 
 		DynArr<Course*> lec;
 		DynArr<Course*> tut;
 
-		for (int j = 0; j < no_of_courses; j++)
+		for (int j = 0; j < courses.size(); j++)
 		{
-			if (courses[j]->getCourse() == p_user_courses[i] && courses[j]->isLecture())
+			if (courses[j].getCourse() == p_user_courses[i] && courses[j].isLecture())
 			{
-				lec.PushBack(courses[j]);
+				lec.PushBack(&courses[j]);
 			}
-			else if (courses[j]->getCourse() == p_user_courses[i] && courses[j]->isTutorial())
+			else if (courses[j].getCourse() == p_user_courses[i] && courses[j].isTutorial())
 			{
-				tut.PushBack(courses[j]);
+				tut.PushBack(&courses[j]);
 			}
 		}
 
@@ -276,13 +298,14 @@ int main()
 		int** mm;
 		mm = new int* [5];
 		for (int i = 0; i < 5; i++)
-			mm[i] = new int[11];
+		mm[i] = new int[11];
 		*/
 
 		//===========Adding lectures and tutorials together
 		for (int j = 0; j < lec.Size(); j++)
 		{
-			if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')
+			//if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')// TO BE CHANGED TO -1
+			if ( lec.Get(j)->getLinker() == '0')// TO BE CHANGED TO -1
 			{
 				TimeTable* t = new TimeTable();
 				t->AddCourse(lec.Get(j));
@@ -309,8 +332,8 @@ int main()
 			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
 		/*
 		else
-			// Printing the Timetable of the course
-			cout << "Printing Timetable contents of " << p_user_courses[i] << ": \n";
+		// Printing the Timetable of the course
+		cout << "Printing Timetable contents of " << p_user_courses[i] << ": \n";
 		*/
 		//system("pause");
 
@@ -319,6 +342,11 @@ int main()
 
 		system("pause");
 	}
+
+
+	////////////////////////////PROBLEM: EXCESSIVE memory use 2GB//////////////////////////////////////////////////
+	////////////////////////////SOLVED, the problem was with the time matrix///////////////////////////////////////
+
 
 	//Adding each course lec & tut to other courses
 	time_t stime = time(NULL);
@@ -337,21 +365,22 @@ int main()
 				end = true;
 			indices.PushBack(n1);
 		}
+		/*cout << "Indices : " << indices << "\n";
+		system("pause");*/
 
-		//cout << "Indices : " << indices << "\n";
-		//system("pause");
+
 
 		//int v = 0;
 
 
 		bool dismissed = false;
 
-		
+
 
 		while (indices.Get(0) < subjects.Get(0).Size() && !end) //REMEMBER Size is more than the indices by 1
 		{
 			TimeTable temp;
-			for (int i = 0; i < subjects.Size(); i++)	//Can be change to a for loop
+			for (int i = 0; i < subjects.Size(); i++)	
 			{
 				if (Check_If_Matrix_Added(subjects.Get(i).Get(indices.Get(i))->getTimeMatrix(), temp.getTimeMatrix()))
 				{
@@ -360,6 +389,7 @@ int main()
 				else
 				{
 					dismissed = true;
+					break;
 				}
 			}
 			if (!dismissed)
@@ -405,7 +435,7 @@ int main()
 		cout << "======================================================================================================================\n";
 		cout << "Table number " << i+1 << "\n" << finalTables.Get(i) << "\n";
 		//finalTables.Get(i).PrintMatrix();
-		cout <<"\nNo of Gaps = " << finalTables.Get(i).getNoOfGaps();
+		cout <<"\nNo of gap hours = " << finalTables.Get(i).getNoOfGaps();
 		cout << "\nNo of free days = " << finalTables.Get(i).getNoOfFreeDays() << "\n";
 		cout << "======================================================================================================================\n";
 	}
@@ -414,31 +444,31 @@ int main()
 	cout << "The Program took " << (diff) << " seconds.\n";
 
 	cout << "Total number of tables = " << finalTables.Size() << "\n";
-	cout << "Finished!! =)\n";
+	cout << "Finished!! \n";
 	system("pause");
 	return 0;
 }
 
-DynArr<string> FileReader()
+vector<string> FileReader()
 {
-	cout << "Please input file name : ";
+	cout << "Please input file name or file path : ";
 
 	string in;
 	getline(cin, in);
 
-	//cout << "\n " << in.size() << "\n";
+	//Removing " at the beginning and at the end of the path
 	if (in[0] == '"')
 		in.erase(0,1);
 	if (in[in.size()-1] == '"')
 		in.erase(in.size()-1,1);
-	//cout << "\n " << in.size() << "\n" << in.substr(in.size()-4,4) << "\n";
+	
 	if (in.size()-4 < 0)
 		in += ".txt";
 	else if (in.substr(in.size()-4,4) != ".txt")
 		in += ".txt";
 
-	int pos = in.find_last_of('\\');	//Returns the position of the last '\', or npos if not found
-	cout << in.substr(pos+1) << "\n";
+	if ( in.find_last_of('\\') != string::npos)	//Returns the position of the last '\', or npos if not found
+		cout << in.substr(in.find_last_of('\\') +1) << "\n";
 
 	ifstream input;
 	input.open(in);
@@ -447,43 +477,140 @@ DynArr<string> FileReader()
 	{
 		cout << "Error\nPlease input file name : ";
 		getline(cin, in);
-		in += ".txt";
+		if (in == "")
+			continue;
+		//Removing " at the beginning and at the end of the path
+		if (in[0] == '"')
+			in.erase(0, 1);
+		if (in[in.size() - 1] == '"')
+			in.erase(in.size() - 1, 1);
+
+		if (in.size() - 4 < 0)
+			in += ".txt";
+		else if (in.substr(in.size() - 4, 4) != ".txt")
+			in += ".txt";
+
+		if (in.find_last_of('\\') != string::npos)	//Returns the position of the last '\', or npos if not found
+			cout << in.substr(in.find_last_of('\\') + 1) << "\n";
 		input.open(in);
 	}
 	cout << "Opened\n";
 
 	string a;
-	DynArr<string> result;
+	vector<string> result;
 
 	while (input)
 	{
 		string temp = a;
 		getline(input, a);
 		if (a != temp)
-			result.PushBack(a);
+			result.push_back(a);
 	}
 	return result;
 }
 
-DynArr<string> fileReadProcess( const DynArr<string>& read ) // need to be implemented
+vector<string> fileReadProcess( const vector<string>& read ) // need to be implemented
 {
-	DynArr<string> result;
-	for (int i = 0; i < read.Size(); i++)
-	{
-		string temp;
-		temp = read.Get(i);
-		int spaceCount = 0;
-		for (int j = 0; j < temp.length() - 1; j++)
-		{
 
-			if ( temp.substr(j,2) == "\t")
-				cout << "tab found";
+	//try using move to make is efficient
+	vector<string> result;
+	bool nexter = false;
+	for (int i = 0; i < read.size(); i++)
+	{
+		stringstream sstream ( read[i] );
+		if ( read[i] == "" )
+			continue;
+
+		if ( read[i].substr(0,2) == "id" )
+		{
+			nexter = true;
+			continue;
 		}
-		cout <<  temp;
-		system("pause");
+
+		if ( nexter )
+		{
+			//"ex. MTHN102a l 08 11 sun
+			bool isGENN = false;
+			string temp;
+			string finaler = "";
+			getline(sstream, temp, '\t');		//GET id
+			if ( temp[0] < '1' || temp[0] > '9' )
+				continue;
+			getline(sstream, temp, '\t');		//GET code
+			while ( temp.find('_') != string::npos)
+				temp.erase( temp.find('_'), 1);
+
+			//Now, temp has the course code
+			if ( temp.find("GENN") != string::npos )
+				isGENN = true;
+
+			finaler += temp;
+			getline(sstream, temp, '\t');	//name
+			getline(sstream, temp, '\t');	//group
+			if ( isGENN )
+				finaler += "0 ";
+			else
+				finaler += "1 ";
+
+			getline(sstream, temp, '\t');	//type
+			if ( temp == "Lecture_" )
+				finaler += "l ";
+			else
+				finaler += "t ";
+
+			string day;
+			getline(sstream, temp, '\t');	//Day
+			if ( temp == "Sunday" )
+				day = "sun";
+			else if ( temp == "Monday" )
+				day = "mon";
+			else if ( temp == "Tuesday" )
+				day = "tue";
+			else if ( temp == "Wednesday" )
+				day = "wed";
+			else if ( temp == "Thursday" )
+				day = "thu";
+			else if ( temp == "Saturday" )
+				continue;
+				
+				//day = "sun";			////////////////////////////////////////////////TO BE FIXED
+
+			
+
+			getline(sstream, temp, '\t');	//start time
+			temp = temp.substr(0, temp.find(':'));
+			if ( temp.size() == 1 )
+			{
+				temp.insert(0,"0");
+			}
+			finaler += temp + " ";
+
+			getline(sstream, temp, '\t');	//end time
+			temp = temp.substr(0, temp.find(':'));
+			if ( temp.size() == 1 )
+			{
+				if (temp[0] == '9')
+				{
+					temp[0] = '1';
+					temp += "0";
+				}
+				else
+				{
+					temp[0] += 1;		
+					temp.insert(0,"0");
+				}
+			}
+			else
+				temp[1] += 1;
+			finaler += temp + " ";
+			finaler += day;
+			result.push_back(finaler);
+		}
 	}
 	return result;
 }
+
+
 
 void resetIndex(int v, DynArr<int>& indices, const DynArr< DynArr<TimeTable*> >& subjects, bool& end)
 {
@@ -503,3 +630,4 @@ void resetIndex(int v, DynArr<int>& indices, const DynArr< DynArr<TimeTable*> >&
 		v = 0;
 	}
 }
+
