@@ -190,8 +190,6 @@ int main()
 	//cout << courses.size() << "\n";
 	//system("pause");
 
-	//===============================TO BE DONE============= Add a functor for comparison between courses
-
 
 	//courses[no_of_courses]->print_matrix(); //////testing
 
@@ -225,6 +223,17 @@ int main()
 
 	cout << "\n";
 	
+	cout << "Do you want to take into consideration whether the session is opened or closed ? (Y/N)\n";
+	char openOrCloseAnswer;
+	bool openOrClose;
+	cin >> openOrCloseAnswer;
+
+	if (openOrCloseAnswer == 'y' || openOrCloseAnswer == 'Y')
+		openOrClose = true;
+	else if (openOrCloseAnswer == 'n' || openOrCloseAnswer == 'N')
+		openOrClose = false;
+
+
 	//-----------------Getting the courses the user want to enroll at
 	/*
 	int no_of_user_courses;
@@ -281,11 +290,11 @@ int main()
 
 		for (int j = 0; j < courses.size(); j++)
 		{
-			if (courses[j].getCourse() == p_user_courses[i] && courses[j].isLecture())
+			if (courses[j].getCourse() == p_user_courses[i] && courses[j].isLecture() && (!openOrClose || courses[j].getIsOpen()))
 			{
 				lec.PushBack(&courses[j]);
 			}
-			else if (courses[j].getCourse() == p_user_courses[i] && courses[j].isTutorial())
+			else if (courses[j].getCourse() == p_user_courses[i] && courses[j].isTutorial() && (!openOrClose || courses[j].getIsOpen() ) )
 			{
 				tut.PushBack(&courses[j]);
 			}
@@ -330,7 +339,7 @@ int main()
 		//if (course_1.Size() != 0)
 		subjects.PushBack(course_1);
 		if (course_1.Size() == 0)
-			cout << "Course " << p_user_courses[i] << " does not have a tutorial and a lecture that can be combined\n";
+			cout << "Course " << p_user_courses[i] << " cannot be added to the timetable\n";
 		/*
 		else
 		// Printing the Timetable of the course
@@ -437,7 +446,7 @@ int main()
 		cout << "Table number " << i+1 << "\n" << finalTables.Get(i) << "\n";
 		//finalTables.Get(i).PrintMatrix();
 		cout <<"\nNo of gap hours = " << finalTables.Get(i).getNoOfGaps();
-		cout << "\nNo of free days = " << finalTables.Get(i).getNoOfFreeDays() << "\n";
+		cout << "\nNo of free days = " << finalTables.Get(i).getNoOfFreeDays() << "\t(Saturdays included)\n";
 		cout << "======================================================================================================================\n";
 	}
 	auto etime = std::chrono::high_resolution_clock::now();
@@ -513,7 +522,6 @@ vector<string> FileReader()
 vector<string> fileReadProcess( const vector<string>& read ) // need to be implemented
 {
 
-	//try using move to make is efficient
 	vector<string> result;
 	bool nexter = false;
 	for (int i = 0; i < read.size(); i++)
@@ -537,12 +545,23 @@ vector<string> fileReadProcess( const vector<string>& read ) // need to be imple
 			getline(sstream, temp, '\t');		//GET id
 			if ( temp[0] < '1' || temp[0] > '9' )
 				continue;
+
 			getline(sstream, temp, '\t');		//GET code
-			while ( temp.find('_') != string::npos)
+			while ( temp.find('_') != string::npos) //removes underscore form code
 				temp.erase( temp.find('_'), 1);
 
 			//Now, temp has the course code
-			if ( temp.find("GENN") != string::npos )
+			if ( temp.find("GENN") != string::npos 
+				|| temp.find("CCEN") != string::npos 
+				|| temp.find("EEEN") != string::npos
+				|| temp.find("CIEN") != string::npos
+				|| temp.find("STEN") != string::npos
+				|| temp.find("AETN") != string::npos
+				|| temp.find("PPCN") != string::npos			
+				|| temp.find("WEEN") != string::npos
+				|| temp.find("CEMN") != string::npos
+				|| temp.find("MDEN") != string::npos
+				)
 				isGENN = true;
 
 			finaler += temp;
@@ -561,20 +580,20 @@ vector<string> fileReadProcess( const vector<string>& read ) // need to be imple
 
 			string day;
 			getline(sstream, temp, '\t');	//Day
-			if ( temp == "Sunday" )
+			if (temp == "Sunday")
 				day = "sun";
-			else if ( temp == "Monday" )
+			else if (temp == "Monday")
 				day = "mon";
-			else if ( temp == "Tuesday" )
+			else if (temp == "Tuesday")
 				day = "tue";
-			else if ( temp == "Wednesday" )
+			else if (temp == "Wednesday")
 				day = "wed";
-			else if ( temp == "Thursday" )
+			else if (temp == "Thursday")
 				day = "thu";
-			else if ( temp == "Saturday" )
-				continue;
+			else if (temp == "Saturday")
+				day = "sat";
 				
-				//day = "sun";			////////////////////////////////////////////////TO BE FIXED
+				
 
 			
 
@@ -605,6 +624,25 @@ vector<string> fileReadProcess( const vector<string>& read ) // need to be imple
 				temp[1] += 1;
 			finaler += temp + " ";
 			finaler += day;
+
+			getline(sstream, temp, '\t');	//class size NOT USED
+			getline(sstream, temp, '\t');	//enrolled NOT USED
+			getline(sstream, temp, '\t');	//waiting size NOT USED
+
+			getline(sstream, temp, '\t');	//status
+			if (temp == "___Opened___")
+			{
+				finaler += " open";
+			}
+			else if (temp == "___Closed___")
+			{
+				finaler += " closed";
+			}
+			else
+			{
+				cout << "Error: course is neither opened nor closed.\nRecommendation is to turn off the closed/open option";
+			}
+
 			result.push_back(finaler);
 		}
 	}

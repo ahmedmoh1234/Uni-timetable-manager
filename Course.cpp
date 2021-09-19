@@ -118,7 +118,7 @@ Course::Course(std::string user_input)
 		matrix_of_time[i] = new int[COL_COUNT];
 	//--------------------------------------------
 
-	getline(sstream, temp, ' ');
+	getline(sstream, temp, ' ');	//get day
 	Day d = Read_Day_From_String(temp);
 	day = d;
 
@@ -126,7 +126,7 @@ Course::Course(std::string user_input)
 	{
 		for (int j = 0; j < COL_COUNT; j++)
 		{
-			if ((d - 1) == i)
+			if (d  == i)
 			{
 				if ((st - 8) == j)
 				{
@@ -145,6 +145,12 @@ Course::Course(std::string user_input)
 			}
 		}
 	}
+
+	getline(sstream, temp, ' ');	//get "open" or "closed"
+	if (temp == "open")
+		isOpen = true;
+	else
+		isOpen = false;
 
 	bool falser = false;
 	for (int i = 0; i < ROW_COUNT; i++)
@@ -312,7 +318,10 @@ int** Course::getMatrix() const
 	return matrix_of_time;
 }
 
-
+bool Course::getIsOpen() const
+{
+	return isOpen;
+}
 //bool Course::operator< (Course* c2)
 //{
 //	if (this->getCourse() < c2->getCourse())

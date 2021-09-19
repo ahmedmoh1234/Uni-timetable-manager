@@ -5,7 +5,7 @@
 #include "Functions.h"
 #include <iostream>
 
-const int ROW_COUNT = 5;
+const int ROW_COUNT = 6;
 const int COL_COUNT = 14;
 using namespace std;
 
@@ -21,6 +21,7 @@ private:
 	bool is_tutorial;
 	Day day;						//Day of course
 	int ** matrix_of_time;			//matrix which represent the timetable of a certain session of the course. if cell == 1, then the session uses this time. cells represent timeslots (ex. cell[0][0] represent time slot 8-->9 on Sunday)
+	bool isOpen;
 public:
 	Course(void);
 
@@ -48,6 +49,8 @@ public:
 	Day getDay() const;
 
 	int** getMatrix() const;
+
+	bool getIsOpen() const;
 
 	friend ostream & operator << (ostream &out, const Course &c);
 
