@@ -6,6 +6,7 @@
 #include <time.h>
 #include <sstream> 
 #include <set>
+#include <chrono>
 
 #include "ENUM.h"
 #include "Functions.h"
@@ -349,7 +350,7 @@ int main()
 
 
 	//Adding each course lec & tut to other courses
-	time_t stime = time(NULL);
+	auto stime = std::chrono::high_resolution_clock::now();
 
 	DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
 
@@ -439,9 +440,9 @@ int main()
 		cout << "\nNo of free days = " << finalTables.Get(i).getNoOfFreeDays() << "\n";
 		cout << "======================================================================================================================\n";
 	}
-	time_t etime = time(NULL);
-	double diff = difftime(etime, stime);
-	cout << "The Program took " << (diff) << " seconds.\n";
+	auto etime = std::chrono::high_resolution_clock::now();
+	auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(etime - stime);
+	cout << "The Program took " << diff.count() << " seconds.\n";
 
 	cout << "Total number of tables = " << finalTables.Size() << "\n";
 	cout << "Finished!! \n";
