@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include "ENUM.h"
-#include "Course.h"
+#include "Session.h"
 
 
 using namespace std;

@@ -6,14 +6,15 @@
 #include <time.h>
 #include <sstream> 
 #include <set>
+#include <unordered_set>
 #include <chrono>
 
 #include "ENUM.h"
 #include "Functions.h"
-#include "Course.h"
+#include "Session.h"
 #include "DynamicArray.h"
 #include "TimeTable.h"
-#include <unordered_set>
+#include "Course.h"
 
 using namespace std;
 
@@ -49,17 +50,29 @@ ostream& operator << (ostream& out, const DynArr<T*>& D)
 
 ostream& operator << (ostream& out, const TimeTable& t)
 {
-	for (int i = 0; i < t.table.Size(); i++)
+	for (int i = 0; i < t.table.size(); i++)
 	{
-		if (i > 0 && !(t.table.Get(i)->getDay() == t.table.Get(i - 1)->getDay()) && t.table.Size() > 2)
+		if (i > 0 && !(t.table[i]->getDay() == t.table[i - 1]->getDay()) && t.table.size() > 2)
 			out << "\n";
-		out << *(t.table.Get(i));
+		out << *(t.table[i]);
 	}
 	out << "\n";
 	return out;
 }
 
-ostream& operator << (ostream& out, const Course& c)		//Working
+ostream& operator << (ostream& out, TimeTable* t)
+{
+	for (int i = 0; i < t->table.size(); i++)
+	{
+		if (i > 0 && !(t->table[i]->getDay() == t->table[i-1]->getDay()) && t->table.size() > 2)
+			out << "\n";
+		out << *(t->table[i]);
+	}
+	out << "\n";
+	return out;
+}
+
+ostream& operator << (ostream& out, const Session& c)		//Working
 {
 	out << "Course code: " << c.course_code << "  ";
 
@@ -72,12 +85,12 @@ ostream& operator << (ostream& out, const Course& c)		//Working
 
 	cout << "\tStart time : " << c.start_time << "\t\t";
 	cout << "End time: " << c.end_time << " \t";
-	cout << "Linker to tutorial: " << c.code;
+	//cout << "Linker to tutorial: " << c.code;
 	cout << "\n";
 	return out;
 }
 
-ostream& operator << (ostream& out, const Course*& c)		//Working
+ostream& operator << (ostream& out, const Session*& c)		//Working
 {
 	out << "Course code: " << c->course_code << "  ";
 
@@ -90,7 +103,7 @@ ostream& operator << (ostream& out, const Course*& c)		//Working
 
 	cout << "\tStart time : " << c->start_time << "\t\t";
 	cout << "End time: " << c->end_time << " \t";
-	cout << "Linker to tutorial: " << c->code;
+	//cout << "Linker to tutorial: " << c->code;
 	cout << "\n";
 	return out;
 }
@@ -99,14 +112,14 @@ vector<string> FileReader();
 
 vector<string> fileReadProcess( const vector<string>& read );
 
-bool operator < (Course c1, Course c2)
+bool operator < (Session c1, Session c2)
 {
-	if (c1.getCourse() < c2.getCourse())
+	if (c1.getCourseCode() < c2.getCourseCode())
 	{
 		return true;
 	}
 
-	else if (c1.getCourse() == c2.getCourse())
+	else if (c1.getCourseCode() == c2.getCourseCode())
 	{
 		if (c1.getDay() < c2.getDay())
 		{
@@ -125,9 +138,16 @@ bool operator < (Course c1, Course c2)
 	return false;
 }
 
-void resetIndex(int v, DynArr<int>& indices, const DynArr< DynArr<TimeTable*> >& subjects, bool& end);
+void resetIndex(int v, vector<int>& indices, const vector< vector<TimeTable*> >& subjects, bool& end);
 
-
+template <class T>
+void PrintVector(vector<T> vec)
+{
+	for (int i = 0; i < vec.size; i++)
+	{
+		cout << vec[i] << "\n";
+	}
+}
 
 int main()
 {
@@ -160,6 +180,8 @@ int main()
 	cout << "5. Press ""SHIFT + Right mouse click"" on the saved notepad\n";
 	cout << "6. Press on ""Copy as path""\n";
 	cout << "7. Run the program, paste the path and follow the instructions\n";
+	cout << "The output tables are sorted DESCENDINGLY in order of the number of gap hours and number of free days\n";
+	cout << "This means that the table with the least number of gap hours and the most free days will be the last timetable\n\n";
 
 	vector<string> input_courses;
 
@@ -168,17 +190,17 @@ int main()
 	input_courses = fileReadProcess(input_courses);
 	
 	
-	vector<Course> courses;
+	vector<Session> allCourses;
 	
 	for (int i = 0; i < input_courses.size(); i++)
 	{
-		courses.push_back( Course(input_courses[i]) );
+		allCourses.push_back( Session(input_courses[i]) );
 	}
 
 	
 	//Sorting courses and removing duplicates
-	set<Course> s(courses.begin(), courses.end());
-	courses.assign(s.begin(), s.end());
+	set<Session> s(allCourses.begin(), allCourses.end());
+	allCourses.assign(s.begin(), s.end());
 	//for (int i = 0; i < courses.size(); i++)
 	//{
 	//	s.insert(courses[i]);
@@ -214,10 +236,10 @@ int main()
 	}
 	*/
 	//------------------------------Printing inputs
-	for (int i = 0; i < courses.size(); i++)
+	for (int i = 0; i < allCourses.size(); i++)
 	{
 		cout << i+1 << " ";
-		courses[i].print();
+		cout << allCourses[i];
 		//courses[i]->print_matrix();////////////////////////////////////////
 	}
 
@@ -227,6 +249,8 @@ int main()
 	char openOrCloseAnswer;
 	bool openOrClose;
 	cin >> openOrCloseAnswer;
+
+	
 
 	if (openOrCloseAnswer == 'y' || openOrCloseAnswer == 'Y')
 		openOrClose = true;
@@ -242,7 +266,7 @@ int main()
 
 	string* p_user_courses = new string[no_of_user_courses];
 	*/
-	vector<string> p_user_courses;
+	vector<string> inputUserCoursesString;
 	cout << "Please enter the courses you want ";
 	cout << "\n";
 	cout << "enter each course then press enter";
@@ -250,15 +274,16 @@ int main()
 	cout << "Enter 0 when you finish";
 	cout << "\n";
 	string temp1 = "";
-	int userCount = 0;
-	cout << userCount + 1 << " ";
+	int userCount = 1;
+	cout << userCount  << " ";
 	cin >> temp1;
 	while (temp1 != "0")
 	{
+		
 		Convert_String_To_Uppercase(temp1);
-		p_user_courses.push_back(temp1);
+		inputUserCoursesString.push_back(temp1);
 		userCount++;
-		cout << userCount + 1 << " ";
+		cout << userCount << " ";
 		cin >> temp1;
 	}
 
@@ -268,9 +293,9 @@ int main()
 	cout << "The courses you entered are: ";
 	cout << "\n";
 
-	for (int i = 0; i < p_user_courses.size(); i++)
+	for (int i = 0; i < inputUserCoursesString.size(); i++)
 	{
-		cout << i + 1 << " " << p_user_courses[i];
+		cout << i + 1 << " " << inputUserCoursesString[i];
 		cout << "\n";
 
 	}
@@ -279,24 +304,32 @@ int main()
 
 	//-------------Organising courses into Subject (Lecture + tutorial)
 	//PROBLEM : at the end of the first lecture, the timetable duplicates // SOLVED
-	DynArr< DynArr<TimeTable*> >  subjects;
-
-	for (int i = 0; i < p_user_courses.size(); i++)
+	//DynArr< DynArr<TimeTable*> >  subjects;
+	vector< vector<TimeTable*> >  subjects;
+	for (int i = 0; i < inputUserCoursesString.size(); i++)
 	{
-		DynArr<TimeTable*> course_1;
+		//DynArr<TimeTable*> course_1;
 
-		DynArr<Course*> lec;
-		DynArr<Course*> tut;
+		//DynArr<Course*> lec;
+		//DynArr<Course*> tut;
 
-		for (int j = 0; j < courses.size(); j++)
+		vector<TimeTable*> course_1;
+
+		vector<Session*> lec;
+		vector<Session*> tut;
+
+		for (int j = 0; j < allCourses.size(); j++)
 		{
-			if (courses[j].getCourse() == p_user_courses[i] && courses[j].isLecture() && (!openOrClose || courses[j].getIsOpen()))
+			if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isLecture() && (!openOrClose || allCourses[j].getIsOpen()))
 			{
-				lec.PushBack(&courses[j]);
+				//lec.PushBack(&courses[j]);
+				lec.push_back(&allCourses[j]);
 			}
-			else if (courses[j].getCourse() == p_user_courses[i] && courses[j].isTutorial() && (!openOrClose || courses[j].getIsOpen() ) )
+			else if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isTutorial() && (!openOrClose || allCourses[j].getIsOpen() ) )
 			{
-				tut.PushBack(&courses[j]);
+				//tut.PushBack(&courses[j]);
+				tut.push_back(&allCourses[j]);
+				
 			}
 		}
 
@@ -312,34 +345,35 @@ int main()
 		*/
 
 		//===========Adding lectures and tutorials together
-		for (int j = 0; j < lec.Size(); j++)
+		for (int j = 0; j < lec.size(); j++)
 		{
 			//if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')// TO BE CHANGED TO -1
-			if ( lec.Get(j)->getLinker() == '0')// TO BE CHANGED TO -1
+			if ( lec[j]->getIsGENN() )
 			{
 				TimeTable* t = new TimeTable();
-				t->AddCourse(lec.Get(j));
-				course_1.PushBack(t);
+				t->AddCourse(lec[j]);
+				course_1.push_back(t);
 				continue;
 			}
-			for (int k = 0; k < tut.Size(); k++)
+			for (int k = 0; k < tut.size(); k++)
 			{
 
-				if (lec.Get(j)->getLinker() == tut.Get(k)->getLinker() && Check_If_Matrix_Added(lec.Get(j)->getMatrix(), tut.Get(k)->getMatrix()))
+				if (lec[j]->getLinker() == tut[k]->getLinker() 
+					&& Check_If_Matrix_Added( lec[j]->getMatrix(), tut[k]->getMatrix() ) )
 				{
 					TimeTable* t = new TimeTable();
-					t->AddCourse(lec.Get(j));
-					t->AddCourse(tut.Get(k));
-					course_1.PushBack(t);
+					t->AddCourse(lec[j]);
+					t->AddCourse(tut[k]);
+					course_1.push_back(t);
 				}
 			}
 		}
 
 		// add array to "subjects" arr
 		//if (course_1.Size() != 0)
-		subjects.PushBack(course_1);
-		if (course_1.Size() == 0)
-			cout << "Course " << p_user_courses[i] << " cannot be added to the timetable\n";
+		subjects.push_back(course_1);
+		if (course_1.size() == 0)
+			cout << "Course " << inputUserCoursesString[i] << " cannot be added to the timetable\n";
 		/*
 		else
 		// Printing the Timetable of the course
@@ -347,10 +381,13 @@ int main()
 		*/
 		//system("pause");
 
-		for (int l = 0; l < course_1.Size(); l++)
-			cout << *(course_1.Get(l)) << "\n";
+		//Printing the current course lectures and tutorial combinations
+		/*
+		for (int l = 0; l < course_1.size(); l++)
+			cout << *(course_1[l]) << "\n";
+		*/
 
-		system("pause");
+		//system("pause");
 	}
 
 
@@ -361,19 +398,19 @@ int main()
 	//Adding each course lec & tut to other courses
 	auto stime = std::chrono::high_resolution_clock::now();
 
-	DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
-
-	if (subjects.Size() != 0)
+	//DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
+	vector<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
+	if (subjects.size() != 0)
 	{
 		bool end = false;
 
-		DynArr<int> indices;
+		vector<int> indices;
 		int n1 = 0;
-		for (int i = 0; i < subjects.Size(); i++)
+		for (int i = 0; i < subjects.size(); i++)
 		{
-			if (subjects.Get(i).Size() == 0)
+			if (subjects[i].size() == 0)
 				end = true;
-			indices.PushBack(n1);
+			indices.push_back(n1);
 		}
 		/*cout << "Indices : " << indices << "\n";
 		system("pause");*/
@@ -387,14 +424,14 @@ int main()
 
 
 
-		while (indices.Get(0) < subjects.Get(0).Size() && !end) //REMEMBER Size is more than the indices by 1
+		while (indices[0] < subjects[0].size() && !end) //REMEMBER Size is more than the indices by 1
 		{
 			TimeTable temp;
-			for (int i = 0; i < subjects.Size(); i++)	
+			for (int i = 0; i < subjects.size(); i++)	
 			{
-				if (Check_If_Matrix_Added(subjects.Get(i).Get(indices.Get(i))->getTimeMatrix(), temp.getTimeMatrix()))
+				if (Check_If_Matrix_Added(subjects[i][indices[i]]->getTimeMatrix(), temp.getTimeMatrix()))
 				{
-					temp.AddTable(subjects.Get(i).Get(indices.Get(i)));
+					temp.AddTable(subjects[i][ indices[i] ]);
 				}
 				else
 				{
@@ -404,33 +441,33 @@ int main()
 			}
 			if (!dismissed)
 			{
-				finalTables.PushBack(temp);
+				finalTables.push_back(temp);
 			}
 			dismissed = false;
-			resetIndex(subjects.Size() - 1, indices, subjects, end);
+			resetIndex(subjects.size() - 1, indices, subjects, end);
 		} 
 	}
 
 	//Sorting final tables according to the noOfFreeDays and noOfGaps DESCENDINGLY
-	for (int i = 0; i < finalTables.Size(); i++)
+	for (int i = 0; i < finalTables.size(); i++)
 	{
-		for (int j = i; j < finalTables.Size(); j++)
+		for (int j = i; j < finalTables.size(); j++)
 		{
-			if ( finalTables.Get(j).getNoOfFreeDays() > finalTables.Get(i).getNoOfFreeDays() )
+			if ( finalTables[j].getNoOfFreeDays() > finalTables[i].getNoOfFreeDays() )
 			{
 				TimeTable temp;
-				temp = finalTables.Get(j);
-				finalTables.Set(j, finalTables.Get(i));
-				finalTables.Set(i, temp);
+				temp = finalTables[j];
+				finalTables[j] = finalTables[i];
+				finalTables[i] = temp;
 			}
-			else if ( finalTables.Get(j).getNoOfFreeDays() == finalTables.Get(i).getNoOfFreeDays() )
+			else if ( finalTables[j].getNoOfFreeDays() == finalTables[i].getNoOfFreeDays() )
 			{
-				if ( finalTables.Get(j).getNoOfGaps() > finalTables.Get(i).getNoOfGaps() )
+				if ( finalTables[j].getNoOfGaps() > finalTables[i].getNoOfGaps() )
 				{
 					TimeTable temp;
-					temp = finalTables.Get(j);
-					finalTables.Set(j, finalTables.Get(i));
-					finalTables.Set(i, temp);
+					temp = finalTables[j];
+					finalTables[j] =  finalTables[i];
+					finalTables[i] = temp;
 				}
 			}
 		}
@@ -438,22 +475,22 @@ int main()
 
 
 	//Printing the sorted timetables
-	for (int i = 0; i < finalTables.Size(); i++ )
+	for (int i = 0; i < finalTables.size(); i++ )
 	{
 		cout << "\n";
 		cout << "\n";
 		cout << "======================================================================================================================\n";
-		cout << "Table number " << i+1 << "\n" << finalTables.Get(i) << "\n";
+		cout << "Table number " << i+1 << "\n" << finalTables[i] << "\n";
 		//finalTables.Get(i).PrintMatrix();
-		cout <<"\nNo of gap hours = " << finalTables.Get(i).getNoOfGaps();
-		cout << "\nNo of free days = " << finalTables.Get(i).getNoOfFreeDays() << "\t(Saturdays included)\n";
+		cout <<"\nNo of gap hours = " << finalTables[i].getNoOfGaps();
+		cout << "\nNo of free days = " << finalTables[i].getNoOfFreeDays() << "\t(Saturdays included)\n";
 		cout << "======================================================================================================================\n";
 	}
 	auto etime = std::chrono::high_resolution_clock::now();
 	auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(etime - stime);
 	cout << "The Program took " << diff.count() << " seconds.\n";
 
-	cout << "Total number of tables = " << finalTables.Size() << "\n";
+	cout << "Total number of tables = " << finalTables.size() << "\n";
 	cout << "Finished!! \n";
 	system("pause");
 	return 0;
@@ -651,11 +688,11 @@ vector<string> fileReadProcess( const vector<string>& read ) // need to be imple
 
 
 
-void resetIndex(int v, DynArr<int>& indices, const DynArr< DynArr<TimeTable*> >& subjects, bool& end)
+void resetIndex(int v, vector<int>& indices, const vector< vector<TimeTable*> >& subjects, bool& end)
 {
-	while (v >= 0 && indices.Get(v) == subjects.Get(v).Size() - 1)
+	while (v >= 0 && indices[v] == subjects[v].size() - 1)
 	{
-		indices.Set(v, 0);
+		indices[v] = 0;
 		v--;
 	}
 	if (v == -1)
@@ -665,7 +702,7 @@ void resetIndex(int v, DynArr<int>& indices, const DynArr< DynArr<TimeTable*> >&
 	}
 	else
 	{
-		indices.Set(v, indices.Get(v) + 1);
+		indices[v] += 1;
 		v = 0;
 	}
 }

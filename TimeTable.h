@@ -1,13 +1,15 @@
 #pragma once
 #include "DynamicArray.h"
-#include "Course.h"
+#include "Session.h"
 #include "Functions.h"
+#include "Course.h"
 
 class TimeTable
 {
 private:
-	DynArr<Course*> table;
+	vector<Session*> table;
 	int** time;
+	int _creditHours;
 
 public:
 	TimeTable()
@@ -25,6 +27,9 @@ public:
 			}
 		}
 		//--------------------------------------------
+
+		//Credit hours = 0 for new timetables
+		_creditHours = 0;
 	}
 
 	/*
@@ -48,7 +53,7 @@ public:
 
 	//--------Add two arrays of courses
 	int end = 0;
-	for (int i = 0; i < d1.Size(); i++)
+	for (int i = 0; i < d1.size(); i++)
 	{
 
 	}
@@ -58,23 +63,25 @@ public:
 	}
 	*/
 
-	bool AddCourse(Course* c)
+	bool AddCourse(Session* c)
 	{
 		int** new_time;
 		new_time = new int* [ROW_COUNT];
 		for (int i = 0; i < ROW_COUNT; i++)
 			new_time[i] = new int[COL_COUNT];
 
-		if (table.Size() == 0)
+		if (table.size() == 0)
 		{
 			Add_Matrix_And_Check(time, c->getMatrix(), new_time);
 
-			table.PushBack(c);
+			table.push_back(c);
 
 			for (int i = 0; i < 5; i++)
 				delete[] time[i];
 			delete[] time;
 			time = new_time;
+
+			
 
 			return true;
 		}
@@ -85,29 +92,29 @@ public:
 			{
 
 				int index = -1;
-				for (int i = 0; i < this->table.Size(); i++)
+				for (int i = 0; i < this->table.size(); i++)
 				{
-					if (c->getDay() < this->table.Get(i)->getDay())
+					if (c->getDay() < this->table[i]->getDay())
 					{
-						table.PushBack(table.Get(table.Size() - 1));
-						for (int j = table.Size() - 2; j >= i; j--)
+						table.push_back(table[table.size() - 1]);
+						for (int j = table.size() - 2; j >= i; j--)
 						{
-							table.Set(j + 1, table.Get(j));
+							table[j + 1] = table[j];
 						}
-						table.Set(i, c);
+						table[i] = c;
 						added = true;
 						break;
 					}
-					else if (c->getDay() == this->table.Get(i)->getDay())
+					else if (c->getDay() == this->table[i]->getDay())
 					{
-						if (c->getStartTime() < this->table.Get(i)->getStartTime())
+						if (c->getStartTime() < this->table[i]->getStartTime())
 						{
-							table.PushBack(table.Get(table.Size() - 1));
-							for (int j = table.Size() - 2; j >= i; j--)
+							table.push_back(table[table.size() - 1]);
+							for (int j = table.size() - 2; j >= i; j--)
 							{
-								table.Set(j + 1, table.Get(j));
+								table[j + 1] = table[j];
 							}
-							table.Set(i, c);
+							table[i] = c;
 							added = true;
 							break;
 						}
@@ -116,7 +123,7 @@ public:
 				}
 
 				if (!added)
-					table.PushBack(c);
+					table.push_back(c);
 
 				for (int i = 0; i < 5; i++)
 					delete[] time[i];
@@ -134,14 +141,14 @@ public:
 
 	bool AddTable(const TimeTable& t) //Tested and working. Works both ways ( t1.Addtable(t2) == t2.AddTable(t1) )
 	{
-		DynArr<Course*> new_temp;
+		vector<Session*> new_temp;
 
 		int** new_time;
 		new_time = new int* [ROW_COUNT];
 		for (int i = 0; i < ROW_COUNT; i++)
 			new_time[i] = new int[COL_COUNT];
 
-		if (table.Size() == 0)//POSSIBLE ERROR
+		if (table.size() == 0)//POSSIBLE ERROR
 		{
 			table = t.table;
 			int** tblTime = t.getTimeMatrix();
@@ -155,7 +162,7 @@ public:
 			return true;
 		}
 
-		if (t.table.Size() == 0)
+		if (t.table.size() == 0)
 			return true;
 
 		if (Add_Matrix_And_Check(time, t.getTimeMatrix(), new_time))
@@ -164,45 +171,45 @@ public:
 			int i = 0;
 			int k = 0;
 
-			while (i < table.Size() && k < t.table.Size())
+			while (i < table.size() && k < t.table.size())
 			{
-				if (table.Get(i)->getDay() < t.table.Get(k)->getDay())
+				if (table[i]->getDay() < t.table[k]->getDay())
 				{
-					new_temp.PushBack(table.Get(i));
+					new_temp.push_back(table[i]);
 					i++;
 				}
-				else if (table.Get(i)->getDay() == t.table.Get(k)->getDay())
+				else if (table[i]->getDay() == t.table[k]->getDay())
 				{
-					if (table.Get(i)->getStartTime() < t.table.Get(k)->getStartTime())
+					if (table[i]->getStartTime() < t.table[k]->getStartTime())
 					{
-						new_temp.PushBack(table.Get(i));
+						new_temp.push_back(table[i]);
 						i++;
 					}
 					else
 					{
-						new_temp.PushBack(t.table.Get(k));
+						new_temp.push_back(t.table[k]);
 						k++;
 					}
 				}
 				else
 				{
-					new_temp.PushBack(t.table.Get(k));
+					new_temp.push_back(t.table[k]);
 					k++;
 				}
 			}
 			//Check if i or j reached the maximum
-			while (i < table.Size())
+			while (i < table.size())
 			{
 				//NEEDS MOdification
 				//the remainig items in the table must be inserted in order
 				//Unless the timetables are in order
-				new_temp.PushBack(table.Get(i));
+				new_temp.push_back(table[i]);
 				i++;
 			}
 
-			while (k < t.table.Size())
+			while (k < t.table.size())
 			{
-				new_temp.PushBack(t.table.Get(k));
+				new_temp.push_back(t.table[k]);
 				k++;
 			}
 
@@ -225,14 +232,14 @@ public:
 
 	bool AddTable(TimeTable* t) //Tested and working. Works both ways ( t1.Addtable(t2) == t2.AddTable(t1) )
 	{
-		DynArr<Course*> new_temp;
+		vector<Session*> new_temp;
 
 		int** new_time;
 		new_time = new int* [ROW_COUNT];
 		for (int i = 0; i < ROW_COUNT; i++)
 			new_time[i] = new int[COL_COUNT];
 
-		if (table.Size() == 0)//POSSIBLE ERROR
+		if (table.size() == 0)//POSSIBLE ERROR
 		{
 			table = t->table;
 			//this->time = std::move(t->time);
@@ -251,7 +258,7 @@ public:
 			return true;
 		}
 
-		if (t->table.Size() == 0)
+		if (t->table.size() == 0)
 			return true;
 
 		if (Add_Matrix_And_Check(time, t->getTimeMatrix(), new_time))
@@ -260,42 +267,42 @@ public:
 			int i = 0;
 			int k = 0;
 
-			while (i < table.Size() && k < t->table.Size())
+			while (i < table.size() && k < t->table.size())
 			{
-				if (table.Get(i)->getDay() < t->table.Get(k)->getDay())
+				if (table[i]->getDay() < t->table[k]->getDay())
 				{
-					new_temp.PushBack(table.Get(i));
+					new_temp.push_back(table[i]);
 					i++;
 				}
-				else if (table.Get(i)->getDay() == t->table.Get(k)->getDay())
+				else if (table[i]->getDay() == t->table[k]->getDay())
 				{
-					if (table.Get(i)->getStartTime() < t->table.Get(k)->getStartTime())
+					if (table[i]->getStartTime() < t->table[k]->getStartTime())
 					{
-						new_temp.PushBack(table.Get(i));
+						new_temp.push_back(table[i]);
 						i++;
 					}
 					else
 					{
-						new_temp.PushBack(t->table.Get(k));
+						new_temp.push_back(t->table[k]);
 						k++;
 					}
 				}
 				else
 				{
-					new_temp.PushBack(t->table.Get(k));
+					new_temp.push_back(t->table[k]);
 					k++;
 				}
 			}
 			//Check if i or j reached the maximum
-			while (i < table.Size())
+			while (i < table.size())
 			{
-				new_temp.PushBack(table.Get(i));
+				new_temp.push_back(table[i]);
 				i++;
 			}
 
-			while (k < t->table.Size())
+			while (k < t->table.size())
 			{
-				new_temp.PushBack(t->table.Get(k));
+				new_temp.push_back(t->table[k]);
 				k++;
 			}
 			table = new_temp;
@@ -317,7 +324,7 @@ public:
 
 	void Print()
 	{
-		cout << table;
+		//cout << table;
 		cout << "\n";
 		for (int i = 0; i < ROW_COUNT; i++)
 		{
@@ -347,9 +354,9 @@ public:
 		return time;
 	}
 
-	void clear(DynArr<Course*>& dynarr)			//Tested and working
+	void clear(vector<Session*>& dynarr)			//Tested and working
 	{
-		int size = table.Size();
+		int size = table.size();
 		/*
 		for (int i = 0; i < size; i++)
 		{
@@ -377,10 +384,12 @@ public:
 
 	int size()
 	{
-		return table.Size();
+		return table.size();
 	}
 
 	friend ostream& operator << (ostream& out, const TimeTable& t);
+
+	friend ostream& operator << (ostream& out, TimeTable* t);
 
 	int getNoOfGaps()
 	{
