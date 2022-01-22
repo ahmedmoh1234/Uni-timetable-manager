@@ -33,9 +33,9 @@ Session::Session(std::string s, char c, int st, int et, char b, Day d)
 	}
 
 	//----------------Creating 2D array-----------
-	matrix_of_time = new int* [ROW_COUNT];
+	matrix_of_time = matTime(ROW_COUNT);
 	for (int i = 0; i < ROW_COUNT; i++)
-		matrix_of_time[i] = new int[COL_COUNT];
+		matrix_of_time[i] = vector<int>(COL_COUNT,0);
 	//--------------------------------------------
 
 
@@ -118,9 +118,9 @@ Session::Session(std::string user_input)
 	start_time = st;
 	end_time = et;
 
-	matrix_of_time = new int* [ROW_COUNT];
+	matrix_of_time = matTime(ROW_COUNT);
 	for (int i = 0; i < ROW_COUNT; i++)
-		matrix_of_time[i] = new int[COL_COUNT];
+		matrix_of_time[i] = vector<int>(COL_COUNT, 0);
 	//--------------------------------------------
 
 	getline(sstream, temp, ' ');	//get day
@@ -334,7 +334,7 @@ Day Session::getDay() const
 }
 
 
-int** Session::getMatrix() const
+matTime Session::getMatrix() const
 {
 	return matrix_of_time;
 }

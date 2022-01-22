@@ -4,28 +4,25 @@
 #include "Functions.h"
 #include "Course.h"
 
+#include <vector>
+
+using matTime = vector<vector<int>>;
+
 class TimeTable
 {
 private:
 	vector<Session*> _table;
-	int** _time;
+	matTime _time;
 	int _creditHours;
 
 public:
 	TimeTable()
 	{
 		//----------------Creating 2D array-----------
-		_time = new int* [ROW_COUNT];
+		_time = matTime(ROW_COUNT);
 		for (int i = 0; i < ROW_COUNT; i++)
-			_time[i] = new int[COL_COUNT];
+			_time[i] = vector<int>(COL_COUNT,0);
 
-		for (int i = 0; i < ROW_COUNT; i++)
-		{
-			for (int j = 0; j < COL_COUNT; j++)
-			{
-				_time[i][j] = 0;
-			}
-		}
 		//--------------------------------------------
 
 		//Credit hours = 0 for new timetables
@@ -65,10 +62,10 @@ public:
 
 	bool AddCourse(Session* c)
 	{
-		int** new_time;
-		new_time = new int* [ROW_COUNT];
+		matTime new_time;
+		new_time = matTime(ROW_COUNT);
 		for (int i = 0; i < ROW_COUNT; i++)
-			new_time[i] = new int[COL_COUNT];
+			new_time[i] = vector<int>(COL_COUNT, 0);
 
 		if (_table.size() == 0)
 		{
@@ -76,10 +73,8 @@ public:
 
 			_table.push_back(c);
 
-			for (int i = 0; i < 5; i++)
-				delete[] _time[i];
-			delete[] _time;
-			_time = new_time;
+			//Make the time matrix = the new time matrix
+			_time = move(new_time);
 
 			
 
@@ -125,11 +120,10 @@ public:
 				if (!added)
 					_table.push_back(c);
 
-				for (int i = 0; i < 5; i++)
-					delete[] _time[i];
-				delete[] _time;
+				
+				//Make the time matrix = the new time matrix
+				_time = move(new_time);
 
-				_time = new_time;
 				return true;
 			}
 			else
@@ -143,15 +137,15 @@ public:
 	{
 		vector<Session*> new_temp;
 
-		int** new_time;
-		new_time = new int* [ROW_COUNT];
+		matTime new_time;
+		new_time = matTime(ROW_COUNT);
 		for (int i = 0; i < ROW_COUNT; i++)
-			new_time[i] = new int[COL_COUNT];
+			new_time[i] = vector<int>(COL_COUNT, 0);
 
 		if (_table.size() == 0)//POSSIBLE ERROR
 		{
 			_table = t._table;
-			int** tblTime = t.getTimeMatrix();
+			matTime tblTime = t.getTimeMatrix();
 			for (int i = 0; i < ROW_COUNT; i++)
 			{
 				for (int j = 0; j < COL_COUNT; j++)
@@ -234,16 +228,16 @@ public:
 	{
 		vector<Session*> new_temp;
 
-		int** new_time;
-		new_time = new int* [ROW_COUNT];
+		matTime new_time;
+		new_time = matTime(ROW_COUNT);
 		for (int i = 0; i < ROW_COUNT; i++)
-			new_time[i] = new int[COL_COUNT];
+			new_time[i] = vector<int>(COL_COUNT, 0);
 
 		if (_table.size() == 0)//POSSIBLE ERROR
 		{
 			_table = t->_table;
 			//this->time = std::move(t->time);
-			int** tblTime = t->getTimeMatrix();
+			matTime tblTime = t->getTimeMatrix();
 			for (int i = 0; i < ROW_COUNT; i++)
 			{
 				for (int j = 0; j < COL_COUNT; j++)
@@ -349,7 +343,7 @@ public:
 		
 	}
 
-	int** getTimeMatrix() const
+	matTime getTimeMatrix() const
 	{
 		return _time;
 	}

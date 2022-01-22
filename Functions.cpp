@@ -78,7 +78,7 @@ void Print_2D_Matrix(char** arr, int rows, int cols)
 	cout << "\n";
 }
 
-bool Add_Matrix_And_Check(int** arr1, int** arr2, int**& arr3)	//i<5 & j<11
+bool Add_Matrix_And_Check(matTime arr1, matTime arr2, matTime& arr3)	//i<5 & j<11
 {
 	for (int i = 0; i < ROW_COUNT; i++)
 	{
@@ -94,7 +94,7 @@ bool Add_Matrix_And_Check(int** arr1, int** arr2, int**& arr3)	//i<5 & j<11
 	return true;
 }
 
-bool Check_If_Matrix_Added(int** arr1, int** arr2)	//i<5 & j<11
+bool Check_If_Matrix_Added(matTime arr1, matTime arr2)	//i<5 & j<11
 {
 	/*cout << "\n Matrix 1\n";
 	for (int i = 0; i < ROW_COUNT; i++)

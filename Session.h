@@ -4,10 +4,14 @@
 #include "ENUM.h"
 #include "Functions.h"
 #include <iostream>
+#include <vector>
+
 
 const int ROW_COUNT = 6;
 const int COL_COUNT = 14;
+
 using namespace std;
+using matTime = vector<vector<int>>;
 
 class Session 
 {
@@ -20,7 +24,7 @@ private:
 	bool is_lecture;
 	bool is_tutorial;
 	Day day;						//Day of course
-	int ** matrix_of_time;			//matrix which represent the timetable of a certain session of the course. if cell == 1, then the session uses this time. cells represent timeslots (ex. cell[0][0] represent time slot 8-->9 on Sunday)
+	matTime matrix_of_time;			//matrix which represent the timetable of a certain session of the course. if cell == 1, then the session uses this time. cells represent timeslots (ex. cell[0][0] represent time slot 8-->9 on Sunday)
 	bool isOpen;					//true if the session is open, false otherwise
 	bool isGENN;					//true if Course is GENN or equivalent (no tutorial)
 	//int _creditHours;				//No. of credit hours of the course.
@@ -50,7 +54,7 @@ public:
 
 	Day getDay() const;
 
-	int** getMatrix() const;
+	matTime getMatrix() const;
 
 	bool getIsOpen() const;
 
