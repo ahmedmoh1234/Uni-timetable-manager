@@ -50,11 +50,11 @@ ostream& operator << (ostream& out, const DynArr<T*>& D)
 
 ostream& operator << (ostream& out, const TimeTable& t)
 {
-	for (int i = 0; i < t.table.size(); i++)
+	for (int i = 0; i < t._table.size(); i++)
 	{
-		if (i > 0 && !(t.table[i]->getDay() == t.table[i - 1]->getDay()) && t.table.size() > 2)
+		if (i > 0 && !(t._table[i]->getDay() == t._table[i - 1]->getDay()) && t._table.size() > 2)
 			out << "\n";
-		out << *(t.table[i]);
+		out << *(t._table[i]);
 	}
 	out << "\n";
 	return out;
@@ -62,11 +62,11 @@ ostream& operator << (ostream& out, const TimeTable& t)
 
 ostream& operator << (ostream& out, TimeTable* t)
 {
-	for (int i = 0; i < t->table.size(); i++)
+	for (int i = 0; i < t->_table.size(); i++)
 	{
-		if (i > 0 && !(t->table[i]->getDay() == t->table[i-1]->getDay()) && t->table.size() > 2)
+		if (i > 0 && !(t->_table[i]->getDay() == t->_table[i-1]->getDay()) && t->_table.size() > 2)
 			out << "\n";
-		out << *(t->table[i]);
+		out << *(t->_table[i]);
 	}
 	out << "\n";
 	return out;
@@ -149,9 +149,12 @@ void PrintVector(vector<T> vec)
 	}
 }
 
+vector<TimeTable*> MakeCombinations(vector<vector<Course*>> courses);
+
 int main()
 {
 	system("title University Timetable Manager V1");
+	
 	//----------------------------------------a few messages for the user
 	/*
 	cout << "This program is used to create for you the University timetable" << endl;
@@ -266,233 +269,255 @@ int main()
 
 	string* p_user_courses = new string[no_of_user_courses];
 	*/
-	vector<string> inputUserCoursesString;
-	cout << "Please enter the courses you want ";
-	cout << "\n";
-	cout << "enter each course then press enter";
-	cout << "\n";
-	cout << "Enter 0 when you finish";
-	cout << "\n";
-	string temp1 = "";
-	int userCount = 1;
-	cout << userCount  << " ";
-	cin >> temp1;
-	while (temp1 != "0")
+	bool tryAgain = true;
+	while (tryAgain)
 	{
-		
-		Convert_String_To_Uppercase(temp1);
-		inputUserCoursesString.push_back(temp1);
-		userCount++;
+		vector<string> inputUserCoursesString;
+		cout << "Please enter the courses you want ";
+		cout << "\n";
+		cout << "enter each course then press enter";
+		cout << "\n";
+		cout << "Enter 0 when you finish";
+		cout << "\n";
+		string temp1 = "";
+		int userCount = 1;
 		cout << userCount << " ";
 		cin >> temp1;
-	}
-
-
-	//------------------Printing the courses the user want to enroll at
-	cout << "\n";
-	cout << "The courses you entered are: ";
-	cout << "\n";
-
-	for (int i = 0; i < inputUserCoursesString.size(); i++)
-	{
-		cout << i + 1 << " " << inputUserCoursesString[i];
-		cout << "\n";
-
-	}
-	
-	
-
-	//-------------Organising courses into Subject (Lecture + tutorial)
-	//PROBLEM : at the end of the first lecture, the timetable duplicates // SOLVED
-	//DynArr< DynArr<TimeTable*> >  subjects;
-	vector< vector<TimeTable*> >  subjects;
-	for (int i = 0; i < inputUserCoursesString.size(); i++)
-	{
-		//DynArr<TimeTable*> course_1;
-
-		//DynArr<Course*> lec;
-		//DynArr<Course*> tut;
-
-		vector<TimeTable*> course_1;
-
-		vector<Session*> lec;
-		vector<Session*> tut;
-
-		for (int j = 0; j < allCourses.size(); j++)
+		while (temp1 != "0")
 		{
-			if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isLecture() && (!openOrClose || allCourses[j].getIsOpen()))
-			{
-				//lec.PushBack(&courses[j]);
-				lec.push_back(&allCourses[j]);
-			}
-			else if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isTutorial() && (!openOrClose || allCourses[j].getIsOpen() ) )
-			{
-				//tut.PushBack(&courses[j]);
-				tut.push_back(&allCourses[j]);
-				
-			}
+
+			Convert_String_To_Uppercase(temp1);
+			inputUserCoursesString.push_back(temp1);
+			userCount++;
+			cout << userCount << " ";
+			cin >> temp1;
 		}
 
-		//cout << "Lectures : " << lec << "\n";
-		//cout << "\nTutorials : " << tut << "\n";
-		//system("pause");
 
-		/*
-		int** mm;
-		mm = new int* [5];
-		for (int i = 0; i < 5; i++)
-		mm[i] = new int[11];
-		*/
+		//------------------Printing the courses the user want to enroll at
+		cout << "\n";
+		cout << "The courses you entered are: ";
+		cout << "\n";
 
-		//===========Adding lectures and tutorials together
-		for (int j = 0; j < lec.size(); j++)
+		for (int i = 0; i < inputUserCoursesString.size(); i++)
 		{
-			//if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')// TO BE CHANGED TO -1
-			if ( lec[j]->getIsGENN() )
-			{
-				TimeTable* t = new TimeTable();
-				t->AddCourse(lec[j]);
-				course_1.push_back(t);
-				continue;
-			}
-			for (int k = 0; k < tut.size(); k++)
-			{
+			cout << i + 1 << " " << inputUserCoursesString[i];
+			cout << "\n";
 
-				if (lec[j]->getLinker() == tut[k]->getLinker() 
-					&& Check_If_Matrix_Added( lec[j]->getMatrix(), tut[k]->getMatrix() ) )
+		}
+
+
+
+		//-------------Organising courses into Subject (Lecture + tutorial)
+		//PROBLEM : at the end of the first lecture, the timetable duplicates // SOLVED
+		//DynArr< DynArr<TimeTable*> >  subjects;
+		vector< vector<TimeTable*> >  subjects;
+		for (int i = 0; i < inputUserCoursesString.size(); i++)
+		{
+			//DynArr<TimeTable*> course_1;
+
+			//DynArr<Course*> lec;
+			//DynArr<Course*> tut;
+
+			vector<TimeTable*> course_1;
+
+			vector<Session*> lec;
+			vector<Session*> tut;
+
+			for (int j = 0; j < allCourses.size(); j++)
+			{
+				if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isLecture() && (!openOrClose || allCourses[j].getIsOpen()))
+				{
+					//lec.PushBack(&courses[j]);
+					lec.push_back(&allCourses[j]);
+				}
+				else if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isTutorial() && (!openOrClose || allCourses[j].getIsOpen()))
+				{
+					//tut.PushBack(&courses[j]);
+					tut.push_back(&allCourses[j]);
+
+				}
+			}
+
+			//cout << "Lectures : " << lec << "\n";
+			//cout << "\nTutorials : " << tut << "\n";
+			//system("pause");
+
+			/*
+			int** mm;
+			mm = new int* [5];
+			for (int i = 0; i < 5; i++)
+			mm[i] = new int[11];
+			*/
+
+			//===========Adding lectures and tutorials together
+			for (int j = 0; j < lec.size(); j++)
+			{
+				//if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')// TO BE CHANGED TO -1
+				if (lec[j]->getIsGENN())
 				{
 					TimeTable* t = new TimeTable();
 					t->AddCourse(lec[j]);
-					t->AddCourse(tut[k]);
 					course_1.push_back(t);
+					continue;
+				}
+				for (int k = 0; k < tut.size(); k++)
+				{
+
+					if (lec[j]->getLinker() == tut[k]->getLinker()
+						&& Check_If_Matrix_Added(lec[j]->getMatrix(), tut[k]->getMatrix()))
+					{
+						TimeTable* t = new TimeTable();
+						t->AddCourse(lec[j]);
+						t->AddCourse(tut[k]);
+						course_1.push_back(t);
+					}
 				}
 			}
+
+			// add array to "subjects" arr
+			//if (course_1.Size() != 0)
+			subjects.push_back(course_1);
+			if (course_1.size() == 0)
+				cout << "Course " << inputUserCoursesString[i] << " cannot be added to the timetable\n";
+			/*
+			else
+			// Printing the Timetable of the course
+			cout << "Printing Timetable contents of " << p_user_courses[i] << ": \n";
+			*/
+			//system("pause");
+
+			//Printing the current course lectures and tutorial combinations
+			/*
+			for (int l = 0; l < course_1.size(); l++)
+				cout << *(course_1[l]) << "\n";
+			*/
+
+			//system("pause");
 		}
 
-		// add array to "subjects" arr
-		//if (course_1.Size() != 0)
-		subjects.push_back(course_1);
-		if (course_1.size() == 0)
-			cout << "Course " << inputUserCoursesString[i] << " cannot be added to the timetable\n";
-		/*
-		else
-		// Printing the Timetable of the course
-		cout << "Printing Timetable contents of " << p_user_courses[i] << ": \n";
-		*/
-		//system("pause");
 
-		//Printing the current course lectures and tutorial combinations
-		/*
-		for (int l = 0; l < course_1.size(); l++)
-			cout << *(course_1[l]) << "\n";
-		*/
-
-		//system("pause");
-	}
+		////////////////////////////PROBLEM: EXCESSIVE memory use 2GB//////////////////////////////////////////////////
+		////////////////////////////SOLVED, the problem was with the time matrix///////////////////////////////////////
 
 
-	////////////////////////////PROBLEM: EXCESSIVE memory use 2GB//////////////////////////////////////////////////
-	////////////////////////////SOLVED, the problem was with the time matrix///////////////////////////////////////
+		//Adding each course lec & tut to other courses
+		auto stime = std::chrono::high_resolution_clock::now();
+
+		//DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
 
 
-	//Adding each course lec & tut to other courses
-	auto stime = std::chrono::high_resolution_clock::now();
-
-	//DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
-	vector<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
-	if (subjects.size() != 0)
-	{
-		bool end = false;
-
-		vector<int> indices;
-		int n1 = 0;
-		for (int i = 0; i < subjects.size(); i++)
+		vector<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
+		if (subjects.size() != 0)
 		{
-			if (subjects[i].size() == 0)
-				end = true;
-			indices.push_back(n1);
-		}
-		/*cout << "Indices : " << indices << "\n";
-		system("pause");*/
+			bool end = false;
 
-
-
-		//int v = 0;
-
-
-		bool dismissed = false;
-
-
-
-		while (indices[0] < subjects[0].size() && !end) //REMEMBER Size is more than the indices by 1
-		{
-			TimeTable temp;
-			for (int i = 0; i < subjects.size(); i++)	
+			vector<int> indices;
+			int n1 = 0;
+			for (int i = 0; i < subjects.size(); i++)
 			{
-				if (Check_If_Matrix_Added(subjects[i][indices[i]]->getTimeMatrix(), temp.getTimeMatrix()))
-				{
-					temp.AddTable(subjects[i][ indices[i] ]);
-				}
-				else
-				{
-					dismissed = true;
-					break;
-				}
+				if (subjects[i].size() == 0)
+					end = true;
+				indices.push_back(n1);
 			}
-			if (!dismissed)
-			{
-				finalTables.push_back(temp);
-			}
-			dismissed = false;
-			resetIndex(subjects.size() - 1, indices, subjects, end);
-		} 
-	}
+			/*cout << "Indices : " << indices << "\n";
+			system("pause");*/
 
-	//Sorting final tables according to the noOfFreeDays and noOfGaps DESCENDINGLY
-	for (int i = 0; i < finalTables.size(); i++)
-	{
-		for (int j = i; j < finalTables.size(); j++)
-		{
-			if ( finalTables[j].getNoOfFreeDays() > finalTables[i].getNoOfFreeDays() )
+
+
+			//int v = 0;
+
+
+			bool dismissed = false;
+
+
+
+			while (indices[0] < subjects[0].size() && !end) //REMEMBER Size is more than the indices by 1
 			{
 				TimeTable temp;
-				temp = finalTables[j];
-				finalTables[j] = finalTables[i];
-				finalTables[i] = temp;
+				for (int i = 0; i < subjects.size(); i++)
+				{
+					if (Check_If_Matrix_Added(subjects[i][indices[i]]->getTimeMatrix(), temp.getTimeMatrix()))
+					{
+						temp.AddTable(subjects[i][indices[i]]);
+					}
+					else
+					{
+						dismissed = true;
+						break;
+					}
+				}
+				if (!dismissed)
+				{
+					finalTables.push_back(temp);
+				}
+				dismissed = false;
+				resetIndex(subjects.size() - 1, indices, subjects, end);
 			}
-			else if ( finalTables[j].getNoOfFreeDays() == finalTables[i].getNoOfFreeDays() )
+		}
+
+		//Sorting final tables according to the noOfFreeDays and noOfGaps DESCENDINGLY
+		for (int i = 0; i < finalTables.size(); i++)
+		{
+			for (int j = i; j < finalTables.size(); j++)
 			{
-				if ( finalTables[j].getNoOfGaps() > finalTables[i].getNoOfGaps() )
+				if (finalTables[j].getNoOfFreeDays() < finalTables[i].getNoOfFreeDays())
 				{
 					TimeTable temp;
 					temp = finalTables[j];
-					finalTables[j] =  finalTables[i];
+					finalTables[j] = finalTables[i];
 					finalTables[i] = temp;
+				}
+				else if (finalTables[j].getNoOfFreeDays() == finalTables[i].getNoOfFreeDays())
+				{
+					if (finalTables[j].getNoOfGaps() > finalTables[i].getNoOfGaps())
+					{
+						TimeTable temp;
+						temp = finalTables[j];
+						finalTables[j] = finalTables[i];
+						finalTables[i] = temp;
+					}
 				}
 			}
 		}
+
+
+		//Printing the sorted timetables
+		for (int i = 0; i < finalTables.size(); i++)
+		{
+			cout << "\n";
+			cout << "\n";
+			cout << "======================================================================================================================\n";
+			cout << "Table number " << i + 1 << "\n" << finalTables[i] << "\n";
+			//finalTables.Get(i).PrintMatrix();
+			cout << "\nNo of gap hours = " << finalTables[i].getNoOfGaps();
+			cout << "\nNo of free days = " << finalTables[i].getNoOfFreeDays() << "\t(Saturdays included)\n";
+			cout << "======================================================================================================================\n";
+		}
+		auto etime = std::chrono::high_resolution_clock::now();
+		auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(etime - stime);
+		cout << "The Program took " << diff.count() << " seconds.\n";
+
+		cout << "Total number of tables = " << finalTables.size() << "\n";
+		cout << "Finished!! \n";
+		
+		
+		//Ask user to try again
+		cout << "Try again ? (Y/N)\n";
+		char tryAgainChar;
+		cin >> tryAgainChar;
+
+		if (tryAgainChar == 'y' || tryAgainChar == 'Y')
+			tryAgain = true;
+		else
+			tryAgain = false;
+		
 	}
 
-
-	//Printing the sorted timetables
-	for (int i = 0; i < finalTables.size(); i++ )
-	{
-		cout << "\n";
-		cout << "\n";
-		cout << "======================================================================================================================\n";
-		cout << "Table number " << i+1 << "\n" << finalTables[i] << "\n";
-		//finalTables.Get(i).PrintMatrix();
-		cout <<"\nNo of gap hours = " << finalTables[i].getNoOfGaps();
-		cout << "\nNo of free days = " << finalTables[i].getNoOfFreeDays() << "\t(Saturdays included)\n";
-		cout << "======================================================================================================================\n";
-	}
-	auto etime = std::chrono::high_resolution_clock::now();
-	auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(etime - stime);
-	cout << "The Program took " << diff.count() << " seconds.\n";
-
-	cout << "Total number of tables = " << finalTables.size() << "\n";
-	cout << "Finished!! \n";
+	
 	system("pause");
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	return 0;
 }
 
@@ -707,3 +732,28 @@ void resetIndex(int v, vector<int>& indices, const vector< vector<TimeTable*> >&
 	}
 }
 
+vector<TimeTable*> MakeCombinations(vector<vector<Course*>> courses)
+{
+	if (courses.size() == 0)
+		return vector<TimeTable*>();
+
+	vector<int> indices;	//indices of each course in courses vector
+
+	//Added 0 to the indices array. Each array starts at 0
+	int zero = 0;
+	for (int i = 0; i < courses.size(); i++)
+	{
+		//if one of the courses does not have an entry, return empty vector
+		if (courses[i].size() == 0)
+			return vector<TimeTable*>();
+
+		indices.push_back(zero);
+	}
+
+	bool end = false;
+	int index = 0;
+	while (!end)
+	{
+
+	}
+}
