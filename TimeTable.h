@@ -7,23 +7,23 @@
 class TimeTable
 {
 private:
-	vector<Session*> table;
-	int** time;
+	vector<Session*> _table;
+	int** _time;
 	int _creditHours;
 
 public:
 	TimeTable()
 	{
 		//----------------Creating 2D array-----------
-		time = new int* [ROW_COUNT];
+		_time = new int* [ROW_COUNT];
 		for (int i = 0; i < ROW_COUNT; i++)
-			time[i] = new int[COL_COUNT];
+			_time[i] = new int[COL_COUNT];
 
 		for (int i = 0; i < ROW_COUNT; i++)
 		{
 			for (int j = 0; j < COL_COUNT; j++)
 			{
-				time[i][j] = 0;
+				_time[i][j] = 0;
 			}
 		}
 		//--------------------------------------------
@@ -70,16 +70,16 @@ public:
 		for (int i = 0; i < ROW_COUNT; i++)
 			new_time[i] = new int[COL_COUNT];
 
-		if (table.size() == 0)
+		if (_table.size() == 0)
 		{
-			Add_Matrix_And_Check(time, c->getMatrix(), new_time);
+			Add_Matrix_And_Check(_time, c->getMatrix(), new_time);
 
-			table.push_back(c);
+			_table.push_back(c);
 
 			for (int i = 0; i < 5; i++)
-				delete[] time[i];
-			delete[] time;
-			time = new_time;
+				delete[] _time[i];
+			delete[] _time;
+			_time = new_time;
 
 			
 
@@ -88,33 +88,33 @@ public:
 		else
 		{
 			bool added = false;
-			if (Add_Matrix_And_Check(time, c->getMatrix(), new_time))
+			if (Add_Matrix_And_Check(_time, c->getMatrix(), new_time))
 			{
 
 				int index = -1;
-				for (int i = 0; i < this->table.size(); i++)
+				for (int i = 0; i < this->_table.size(); i++)
 				{
-					if (c->getDay() < this->table[i]->getDay())
+					if (c->getDay() < this->_table[i]->getDay())
 					{
-						table.push_back(table[table.size() - 1]);
-						for (int j = table.size() - 2; j >= i; j--)
+						_table.push_back(_table[_table.size() - 1]);
+						for (int j = _table.size() - 2; j >= i; j--)
 						{
-							table[j + 1] = table[j];
+							_table[j + 1] = _table[j];
 						}
-						table[i] = c;
+						_table[i] = c;
 						added = true;
 						break;
 					}
-					else if (c->getDay() == this->table[i]->getDay())
+					else if (c->getDay() == this->_table[i]->getDay())
 					{
-						if (c->getStartTime() < this->table[i]->getStartTime())
+						if (c->getStartTime() < this->_table[i]->getStartTime())
 						{
-							table.push_back(table[table.size() - 1]);
-							for (int j = table.size() - 2; j >= i; j--)
+							_table.push_back(_table[_table.size() - 1]);
+							for (int j = _table.size() - 2; j >= i; j--)
 							{
-								table[j + 1] = table[j];
+								_table[j + 1] = _table[j];
 							}
-							table[i] = c;
+							_table[i] = c;
 							added = true;
 							break;
 						}
@@ -123,13 +123,13 @@ public:
 				}
 
 				if (!added)
-					table.push_back(c);
+					_table.push_back(c);
 
 				for (int i = 0; i < 5; i++)
-					delete[] time[i];
-				delete[] time;
+					delete[] _time[i];
+				delete[] _time;
 
-				time = new_time;
+				_time = new_time;
 				return true;
 			}
 			else
@@ -148,78 +148,78 @@ public:
 		for (int i = 0; i < ROW_COUNT; i++)
 			new_time[i] = new int[COL_COUNT];
 
-		if (table.size() == 0)//POSSIBLE ERROR
+		if (_table.size() == 0)//POSSIBLE ERROR
 		{
-			table = t.table;
+			_table = t._table;
 			int** tblTime = t.getTimeMatrix();
 			for (int i = 0; i < ROW_COUNT; i++)
 			{
 				for (int j = 0; j < COL_COUNT; j++)
 				{
-					this->time[i][j] = tblTime[i][j];
+					this->_time[i][j] = tblTime[i][j];
 				}
 			}
 			return true;
 		}
 
-		if (t.table.size() == 0)
+		if (t._table.size() == 0)
 			return true;
 
-		if (Add_Matrix_And_Check(time, t.getTimeMatrix(), new_time))
+		if (Add_Matrix_And_Check(_time, t.getTimeMatrix(), new_time))
 		{
 
 			int i = 0;
 			int k = 0;
 
-			while (i < table.size() && k < t.table.size())
+			while (i < _table.size() && k < t._table.size())
 			{
-				if (table[i]->getDay() < t.table[k]->getDay())
+				if (_table[i]->getDay() < t._table[k]->getDay())
 				{
-					new_temp.push_back(table[i]);
+					new_temp.push_back(_table[i]);
 					i++;
 				}
-				else if (table[i]->getDay() == t.table[k]->getDay())
+				else if (_table[i]->getDay() == t._table[k]->getDay())
 				{
-					if (table[i]->getStartTime() < t.table[k]->getStartTime())
+					if (_table[i]->getStartTime() < t._table[k]->getStartTime())
 					{
-						new_temp.push_back(table[i]);
+						new_temp.push_back(_table[i]);
 						i++;
 					}
 					else
 					{
-						new_temp.push_back(t.table[k]);
+						new_temp.push_back(t._table[k]);
 						k++;
 					}
 				}
 				else
 				{
-					new_temp.push_back(t.table[k]);
+					new_temp.push_back(t._table[k]);
 					k++;
 				}
 			}
 			//Check if i or j reached the maximum
-			while (i < table.size())
+			while (i < _table.size())
 			{
 				//NEEDS MOdification
 				//the remainig items in the table must be inserted in order
 				//Unless the timetables are in order
-				new_temp.push_back(table[i]);
+				new_temp.push_back(_table[i]);
 				i++;
 			}
 
-			while (k < t.table.size())
+			while (k < t._table.size())
 			{
-				new_temp.push_back(t.table[k]);
+				new_temp.push_back(t._table[k]);
 				k++;
 			}
 
-			table = new_temp;
+			_table = new_temp;
 			//time = new_time;
 			for (int i = 0; i < ROW_COUNT; i++)
 			{
 				for (int j = 0; j < COL_COUNT; j++)
 				{
-					this->time[i][j] = new_time[i][j];
+					this->_time[i][j] = new_time[i][j];
 				}
 			}
 			return true;
@@ -239,16 +239,16 @@ public:
 		for (int i = 0; i < ROW_COUNT; i++)
 			new_time[i] = new int[COL_COUNT];
 
-		if (table.size() == 0)//POSSIBLE ERROR
+		if (_table.size() == 0)//POSSIBLE ERROR
 		{
-			table = t->table;
+			_table = t->_table;
 			//this->time = std::move(t->time);
 			int** tblTime = t->getTimeMatrix();
 			for (int i = 0; i < ROW_COUNT; i++)
 			{
 				for (int j = 0; j < COL_COUNT; j++)
 				{
-					this->time[i][j] = tblTime[i][j];
+					this->_time[i][j] = tblTime[i][j];
 				}
 			}
 			
@@ -258,60 +258,60 @@ public:
 			return true;
 		}
 
-		if (t->table.size() == 0)
+		if (t->_table.size() == 0)
 			return true;
 
-		if (Add_Matrix_And_Check(time, t->getTimeMatrix(), new_time))
+		if (Add_Matrix_And_Check(_time, t->getTimeMatrix(), new_time))
 		{
 
 			int i = 0;
 			int k = 0;
 
-			while (i < table.size() && k < t->table.size())
+			while (i < _table.size() && k < t->_table.size())
 			{
-				if (table[i]->getDay() < t->table[k]->getDay())
+				if (_table[i]->getDay() < t->_table[k]->getDay())
 				{
-					new_temp.push_back(table[i]);
+					new_temp.push_back(_table[i]);
 					i++;
 				}
-				else if (table[i]->getDay() == t->table[k]->getDay())
+				else if (_table[i]->getDay() == t->_table[k]->getDay())
 				{
-					if (table[i]->getStartTime() < t->table[k]->getStartTime())
+					if (_table[i]->getStartTime() < t->_table[k]->getStartTime())
 					{
-						new_temp.push_back(table[i]);
+						new_temp.push_back(_table[i]);
 						i++;
 					}
 					else
 					{
-						new_temp.push_back(t->table[k]);
+						new_temp.push_back(t->_table[k]);
 						k++;
 					}
 				}
 				else
 				{
-					new_temp.push_back(t->table[k]);
+					new_temp.push_back(t->_table[k]);
 					k++;
 				}
 			}
 			//Check if i or j reached the maximum
-			while (i < table.size())
+			while (i < _table.size())
 			{
-				new_temp.push_back(table[i]);
+				new_temp.push_back(_table[i]);
 				i++;
 			}
 
-			while (k < t->table.size())
+			while (k < t->_table.size())
 			{
-				new_temp.push_back(t->table[k]);
+				new_temp.push_back(t->_table[k]);
 				k++;
 			}
-			table = new_temp;
+			_table = new_temp;
 			//time = new_time;
 			for (int i = 0; i < ROW_COUNT; i++)
 			{
 				for (int j = 0; j < COL_COUNT; j++)
 				{
-					this->time[i][j] = new_time[i][j];
+					this->_time[i][j] = new_time[i][j];
 				}
 			}
 			return true;
@@ -330,7 +330,7 @@ public:
 		{
 			for (int j = 0; j < COL_COUNT; j++)
 			{
-				cout << time[i][j] << " ";
+				cout << _time[i][j] << " ";
 			}
 			cout << "\n";
 		}
@@ -342,7 +342,7 @@ public:
 		{
 			for (int j = 0; j < COL_COUNT; j++)
 			{
-				cout << time[i][j] << " ";
+				cout << _time[i][j] << " ";
 			}
 			cout << "\n";
 		}
@@ -351,12 +351,12 @@ public:
 
 	int** getTimeMatrix() const
 	{
-		return time;
+		return _time;
 	}
 
 	void clear(vector<Session*>& dynarr)			//Tested and working
 	{
-		int size = table.size();
+		int size = _table.size();
 		/*
 		for (int i = 0; i < size; i++)
 		{
@@ -370,12 +370,12 @@ public:
 		}
 		*/
 
-		table = dynarr;
+		_table = dynarr;
 		for (int i = 0; i < ROW_COUNT; i++)
 		{
 			for (int j = 0; j < COL_COUNT; j++)
 			{
-				this->time[i][j] = 0;
+				this->_time[i][j] = 0;
 			}
 		}
 
@@ -384,7 +384,7 @@ public:
 
 	int size()
 	{
-		return table.size();
+		return _table.size();
 	}
 
 	friend ostream& operator << (ostream& out, const TimeTable& t);
@@ -401,12 +401,12 @@ public:
 			int lastOneInd = -1;
 			for (int j = 0; j < COL_COUNT; j++)
 			{
-				if ( time[i][j] == 1 && firstOneInd == -1)
+				if ( _time[i][j] == 1 && firstOneInd == -1)
 				{
 					firstOneInd = j;
 					lastOneInd = j;
 				}
-				else if ( time[i][j] == 1 && firstOneInd != -1)
+				else if ( _time[i][j] == 1 && firstOneInd != -1)
 				{
 					lastOneInd = j;
 				}
@@ -414,7 +414,7 @@ public:
 
 			for (int j = firstOneInd; j < lastOneInd; j++)
 			{
-				if ( time[i][j] == 0 )
+				if ( _time[i][j] == 0 )
 					result++;
 			}
 		}
@@ -431,7 +431,7 @@ public:
 			int temp = 0;
 			for (int j = 0; j < COL_COUNT; j++)
 			{
-				temp += time[i][j];
+				temp += _time[i][j];
 			}
 
 			if ( temp == 0 )
