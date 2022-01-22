@@ -149,7 +149,7 @@ void PrintVector(vector<T> vec)
 	}
 }
 
-vector<TimeTable*> MakeCombinations(vector<vector<Course*>> courses);
+
 
 int main()
 {
@@ -732,28 +732,3 @@ void resetIndex(int v, vector<int>& indices, const vector< vector<TimeTable*> >&
 	}
 }
 
-vector<TimeTable*> MakeCombinations(vector<vector<Course*>> courses)
-{
-	if (courses.size() == 0)
-		return vector<TimeTable*>();
-
-	vector<int> indices;	//indices of each course in courses vector
-
-	//Added 0 to the indices array. Each array starts at 0
-	int zero = 0;
-	for (int i = 0; i < courses.size(); i++)
-	{
-		//if one of the courses does not have an entry, return empty vector
-		if (courses[i].size() == 0)
-			return vector<TimeTable*>();
-
-		indices.push_back(zero);
-	}
-
-	bool end = false;
-	int index = 0;
-	while (!end)
-	{
-
-	}
-}
