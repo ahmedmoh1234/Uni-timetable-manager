@@ -50,6 +50,7 @@ ostream& operator << (ostream& out, const DynArr<T*>& D)
 
 ostream& operator << (ostream& out, const TimeTable& t)
 {
+	out << "Credit hours = " << t.getNoOfCH() << "\n";
 	for (int i = 0; i < t._table.size(); i++)
 	{
 		if (i > 0 && !(t._table[i]->getDay() == t._table[i - 1]->getDay()) && t._table.size() > 2)
@@ -62,6 +63,7 @@ ostream& operator << (ostream& out, const TimeTable& t)
 
 ostream& operator << (ostream& out, TimeTable* t)
 {
+	out << "Credit hours = " << t->getNoOfCH() << "\n";
 	for (int i = 0; i < t->_table.size(); i++)
 	{
 		if (i > 0 && !(t->_table[i]->getDay() == t->_table[i-1]->getDay()) && t->_table.size() > 2)
@@ -358,7 +360,10 @@ int main()
 				{
 					TimeTable* t = new TimeTable();
 					t->AddCourse(lec[j]);
+					//TODO Add credit hours to the timetable
+					t->setCH(lec[j]->getEndTime() - lec[j]->getStartTime());
 					course_1.push_back(t);
+
 					continue;
 				}
 				for (int k = 0; k < tut.size(); k++)
@@ -370,6 +375,14 @@ int main()
 						TimeTable* t = new TimeTable();
 						t->AddCourse(lec[j]);
 						t->AddCourse(tut[k]);
+						//TODO Add credit hours to the timetable
+						int lecTime = lec[j]->getEndTime() - lec[j]->getStartTime();
+						int tutTime = tut[k]->getEndTime() - tut[k]->getStartTime();
+
+						if (lecTime > tutTime)
+							t->setCH(lecTime);
+						else
+							t->setCH(tutTime);
 						course_1.push_back(t);
 					}
 				}

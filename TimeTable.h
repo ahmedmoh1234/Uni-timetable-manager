@@ -135,96 +135,10 @@ public:
 
 	bool AddTable(const TimeTable& t) //Tested and working. Works both ways ( t1.Addtable(t2) == t2.AddTable(t1) )
 	{
-		vector<Session*> new_temp;
-
-		matTime new_time;
-		new_time = matTime(ROW_COUNT);
-		for (int i = 0; i < ROW_COUNT; i++)
-			new_time[i] = vector<int>(COL_COUNT, 0);
-
-		if (_table.size() == 0)//POSSIBLE ERROR
-		{
-			_table = t._table;
-			matTime tblTime = t.getTimeMatrix();
-			for (int i = 0; i < ROW_COUNT; i++)
-			{
-				for (int j = 0; j < COL_COUNT; j++)
-				{
-					this->_time[i][j] = tblTime[i][j];
-				}
-			}
-			return true;
-		}
-
-		if (t._table.size() == 0)
-			return true;
-
-		if (Add_Matrix_And_Check(_time, t.getTimeMatrix(), new_time))
-		{
-
-			int i = 0;
-			int k = 0;
-
-			while (i < _table.size() && k < t._table.size())
-			{
-				if (_table[i]->getDay() < t._table[k]->getDay())
-				{
-					new_temp.push_back(_table[i]);
-					i++;
-				}
-				else if (_table[i]->getDay() == t._table[k]->getDay())
-				{
-					if (_table[i]->getStartTime() < t._table[k]->getStartTime())
-					{
-						new_temp.push_back(_table[i]);
-						i++;
-					}
-					else
-					{
-						new_temp.push_back(t._table[k]);
-						k++;
-					}
-				}
-				else
-				{
-					new_temp.push_back(t._table[k]);
-					k++;
-				}
-			}
-			//Check if i or j reached the maximum
-			while (i < _table.size())
-			{
-				//NEEDS MOdification
-				//the remainig items in the table must be inserted in order
-				//Unless the timetables are in order
-				new_temp.push_back(_table[i]);
-				i++;
-			}
-
-			while (k < t._table.size())
-			{
-				new_temp.push_back(t._table[k]);
-				k++;
-			}
-
-			_table = new_temp;
-			//time = new_time;
-			for (int i = 0; i < ROW_COUNT; i++)
-			{
-				for (int j = 0; j < COL_COUNT; j++)
-				{
-					this->_time[i][j] = new_time[i][j];
-				}
-			}
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return this->AddTable(&t);
 	}
 
-	bool AddTable(TimeTable* t) //Tested and working. Works both ways ( t1.Addtable(t2) == t2.AddTable(t1) )
+	bool AddTable(const TimeTable* t) //Tested and working. Works both ways ( t1.Addtable(t2) == t2.AddTable(t1) )
 	{
 		vector<Session*> new_temp;
 
@@ -246,6 +160,8 @@ public:
 				}
 			}
 			
+			_creditHours += t->getNoOfCH();
+
 			/*for (int i = 0; i < 5; i++)
 				delete[] t->time[i];
 			delete[] t->time;*/
@@ -308,6 +224,9 @@ public:
 					this->_time[i][j] = new_time[i][j];
 				}
 			}
+
+			//increase credit hours
+			_creditHours += t->getNoOfCH();
 			return true;
 		}
 		else
@@ -415,6 +334,15 @@ public:
 		return result;
 	}
 
+	int getNoOfCH() const
+	{
+		return _creditHours;
+	}
+
+	void setCH(int ch)
+	{
+		_creditHours = ch;
+	}
 
 	int getNoOfFreeDays()
 	{
