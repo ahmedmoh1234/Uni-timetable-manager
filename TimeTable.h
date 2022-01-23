@@ -304,7 +304,7 @@ public:
 
 	friend ostream& operator << (ostream& out, TimeTable* t);
 
-	int getNoOfGaps()
+	int getNoOfGaps() const
 	{
 		int result = 0;
 
@@ -344,7 +344,7 @@ public:
 		_creditHours = ch;
 	}
 
-	int getNoOfFreeDays()
+	int getNoOfFreeDays() const
 	{
 		int result = 0;
 

@@ -151,7 +151,9 @@ void PrintVector(vector<T> vec)
 	}
 }
 
+void createLecandTutArr(vector<Session>& allCourses, vector<Session*>& lec, vector<Session*>& tut, const string& inputUserCoursesString, bool openOrClose);
 
+vector<TimeTable*> addLecandTut(vector<Session*>& lec, vector<Session*> &tut, const string& inputUserCoursesString);
 
 int main()
 {
@@ -309,104 +311,25 @@ int main()
 		}
 
 
-
+		//Adding each course lec & tut to other courses
+		auto stime = std::chrono::high_resolution_clock::now();
 		//-------------Organising courses into Subject (Lecture + tutorial)
-		//PROBLEM : at the end of the first lecture, the timetable duplicates // SOLVED
-		//DynArr< DynArr<TimeTable*> >  subjects;
+
 		vector< vector<TimeTable*> >  subjects;
 		for (int i = 0; i < inputUserCoursesString.size(); i++)
 		{
-			//DynArr<TimeTable*> course_1;
 
-			//DynArr<Course*> lec;
-			//DynArr<Course*> tut;
 
 			vector<TimeTable*> course_1;
 
 			vector<Session*> lec;
 			vector<Session*> tut;
 
-			for (int j = 0; j < allCourses.size(); j++)
-			{
-				if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isLecture() && (!openOrClose || allCourses[j].getIsOpen()))
-				{
-					//lec.PushBack(&courses[j]);
-					lec.push_back(&allCourses[j]);
-				}
-				else if (allCourses[j].getCourseCode() == inputUserCoursesString[i] && allCourses[j].isTutorial() && (!openOrClose || allCourses[j].getIsOpen()))
-				{
-					//tut.PushBack(&courses[j]);
-					tut.push_back(&allCourses[j]);
-
-				}
-			}
-
-			//cout << "Lectures : " << lec << "\n";
-			//cout << "\nTutorials : " << tut << "\n";
-			//system("pause");
-
-			/*
-			int** mm;
-			mm = new int* [5];
-			for (int i = 0; i < 5; i++)
-			mm[i] = new int[11];
-			*/
-
-			//===========Adding lectures and tutorials together
-			for (int j = 0; j < lec.size(); j++)
-			{
-				//if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')// TO BE CHANGED TO -1
-				if (lec[j]->getIsGENN())
-				{
-					TimeTable* t = new TimeTable();
-					t->AddCourse(lec[j]);
-					//TODO Add credit hours to the timetable
-					t->setCH(lec[j]->getEndTime() - lec[j]->getStartTime());
-					course_1.push_back(t);
-
-					continue;
-				}
-				for (int k = 0; k < tut.size(); k++)
-				{
-
-					if (lec[j]->getLinker() == tut[k]->getLinker()
-						&& Check_If_Matrix_Added(lec[j]->getMatrix(), tut[k]->getMatrix()))
-					{
-						TimeTable* t = new TimeTable();
-						t->AddCourse(lec[j]);
-						t->AddCourse(tut[k]);
-						//TODO Add credit hours to the timetable
-						int lecTime = lec[j]->getEndTime() - lec[j]->getStartTime();
-						int tutTime = tut[k]->getEndTime() - tut[k]->getStartTime();
-
-						if (lecTime > tutTime)
-							t->setCH(lecTime);
-						else
-							t->setCH(tutTime);
-						course_1.push_back(t);
-					}
-				}
-			}
-
-			// add array to "subjects" arr
-			//if (course_1.Size() != 0)
-			subjects.push_back(course_1);
-			if (course_1.size() == 0)
-				cout << "Course " << inputUserCoursesString[i] << " cannot be added to the timetable\n";
-			/*
-			else
-			// Printing the Timetable of the course
-			cout << "Printing Timetable contents of " << p_user_courses[i] << ": \n";
-			*/
-			//system("pause");
-
-			//Printing the current course lectures and tutorial combinations
-			/*
-			for (int l = 0; l < course_1.size(); l++)
-				cout << *(course_1[l]) << "\n";
-			*/
-
-			//system("pause");
+			//Create a lecture array and tutorial array for the current course in the loop
+			createLecandTutArr(allCourses, lec, tut, inputUserCoursesString[i], openOrClose);
+	
+			//===========Adding lectures and tutorials together for the current course in the loop
+			subjects.push_back(addLecandTut(lec, tut, inputUserCoursesString[i]));
 		}
 
 
@@ -414,8 +337,7 @@ int main()
 		////////////////////////////SOLVED, the problem was with the time matrix///////////////////////////////////////
 
 
-		//Adding each course lec & tut to other courses
-		auto stime = std::chrono::high_resolution_clock::now();
+		
 
 		//DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
 
@@ -470,30 +392,16 @@ int main()
 		}
 
 		//Sorting final tables according to the noOfFreeDays and noOfGaps DESCENDINGLY
-		for (int i = 0; i < finalTables.size(); i++)
-		{
-			for (int j = i; j < finalTables.size(); j++)
-			{
-				if (finalTables[j].getNoOfFreeDays() < finalTables[i].getNoOfFreeDays())
-				{
-					TimeTable temp;
-					temp = finalTables[j];
-					finalTables[j] = finalTables[i];
-					finalTables[i] = temp;
-				}
-				else if (finalTables[j].getNoOfFreeDays() == finalTables[i].getNoOfFreeDays())
-				{
-					if (finalTables[j].getNoOfGaps() > finalTables[i].getNoOfGaps())
-					{
-						TimeTable temp;
-						temp = finalTables[j];
-						finalTables[j] = finalTables[i];
-						finalTables[i] = temp;
-					}
-				}
-			}
-		}
+		sort(finalTables.begin(), finalTables.end(), [](const TimeTable &t1, const TimeTable &t2) {
+			if (t1.getNoOfFreeDays() < t2.getNoOfFreeDays())
+				return true;
+			else if (t1.getNoOfFreeDays() == t2.getNoOfFreeDays())
+				if (t1.getNoOfGaps() > t2.getNoOfGaps())
+					return true;
 
+			return false;
+			});
+		
 
 		//Printing the sorted timetables
 		for (int i = 0; i < finalTables.size(); i++)
@@ -508,8 +416,8 @@ int main()
 			cout << "======================================================================================================================\n";
 		}
 		auto etime = std::chrono::high_resolution_clock::now();
-		auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(etime - stime);
-		cout << "The Program took " << diff.count() << " seconds.\n";
+		auto diff = std::chrono::duration_cast<std::chrono::microseconds>(etime - stime);
+		cout << "The Program took " << diff.count() / 1000000.0 << " seconds.\n";
 
 		cout << "Total number of tables = " << finalTables.size() << "\n";
 		cout << "Finished!! \n";
@@ -745,3 +653,67 @@ void resetIndex(int v, vector<int>& indices, const vector< vector<TimeTable*> >&
 	}
 }
 
+void createLecandTutArr(vector<Session> &allCourses, vector<Session*>& lec, vector<Session*>& tut, const string &inputUserCoursesString, bool openOrClose)
+{
+	for (int j = 0; j < allCourses.size(); j++)
+	{
+		if (allCourses[j].getCourseCode() == inputUserCoursesString && allCourses[j].isLecture() && (!openOrClose || allCourses[j].getIsOpen()))
+		{
+			//lec.PushBack(&courses[j]);
+			lec.push_back(&allCourses[j]);
+		}
+		else if (allCourses[j].getCourseCode() == inputUserCoursesString && allCourses[j].isTutorial() && (!openOrClose || allCourses[j].getIsOpen()))
+		{
+			//tut.PushBack(&courses[j]);
+			tut.push_back(&allCourses[j]);
+
+		}
+	}
+}
+
+
+vector<TimeTable*> addLecandTut(vector<Session*> &lec, vector<Session*> &tut, const string& inputUserCoursesString)
+{
+	vector<TimeTable*> tempTimetable;
+	for (int j = 0; j < lec.size(); j++)
+	{
+		//if ( lec.Get(j)->getLinker() == 'z' || lec.Get(j)->getLinker() == 'Z')// TO BE CHANGED TO -1
+		if (lec[j]->getIsGENN())
+		{
+			TimeTable* t = new TimeTable();
+			t->AddCourse(lec[j]);
+			//TODO Add credit hours to the timetable
+			t->setCH(lec[j]->getEndTime() - lec[j]->getStartTime());
+			tempTimetable.push_back(t);
+
+			continue;
+		}
+		for (int k = 0; k < tut.size(); k++)
+		{
+
+			if (lec[j]->getLinker() == tut[k]->getLinker()
+				&& Check_If_Matrix_Added(lec[j]->getMatrix(), tut[k]->getMatrix()))
+			{
+				TimeTable* t = new TimeTable();
+				t->AddCourse(lec[j]);
+				t->AddCourse(tut[k]);
+				//TODO Add credit hours to the timetable
+				int lecTime = lec[j]->getEndTime() - lec[j]->getStartTime();
+				int tutTime = tut[k]->getEndTime() - tut[k]->getStartTime();
+
+				if (lecTime > tutTime)
+					t->setCH(lecTime);
+				else
+					t->setCH(tutTime);
+
+				tempTimetable.push_back(t);
+			}
+		}
+	}
+
+	if (tempTimetable.size() == 0)
+		cout << "Course " << inputUserCoursesString << " cannot be added to the timetable\n";
+
+	return tempTimetable;
+
+}
