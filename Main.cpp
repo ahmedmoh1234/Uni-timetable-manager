@@ -17,7 +17,7 @@
 #include "Course.h"
 
 using namespace std;
-
+using Time = std::chrono::high_resolution_clock;
 
 
 template<class T>
@@ -155,6 +155,12 @@ void createLecandTutArr(vector<Session>& allCourses, vector<Session*>& lec, vect
 
 vector<TimeTable*> addLecandTut(vector<Session*>& lec, vector<Session*> &tut, const string& inputUserCoursesString);
 
+vector<string> getUserCourses();
+
+void printTimetables(const vector<TimeTable>& finalTables, Time::time_point sTime);
+
+vector<TimeTable> getPremutations(const vector< vector<TimeTable*> >& subjects);
+
 int main()
 {
 	system("title University Timetable Manager V1");
@@ -208,46 +214,13 @@ int main()
 	//Sorting courses and removing duplicates
 	set<Session> s(allCourses.begin(), allCourses.end());
 	allCourses.assign(s.begin(), s.end());
-	//for (int i = 0; i < courses.size(); i++)
-	//{
-	//	s.insert(courses[i]);
-	//}
-	//cout << s.size() << "\n";;
-	//courses.assign(s.begin(), s.end());
-	//cout << courses.size() << "\n";
-	//courses.shrink_to_fit();
-	//cout << courses.size() << "\n";
-	//system("pause");
 
 
-	//courses[no_of_courses]->print_matrix(); //////testing
-
-	/*
-	string code = user_input.substr(0,7);
-	while ( code.length() == 7  )
-	{
-	cout << "\n" ;
-	cout << "Please enter another session or enter 0 to end " << endl;
-
-	getline(cin, user_input,';');
-
-	code				= user_input.substr(0,7);
-	if (code == "0")
-	{break;}
-
-	courses[no_of_courses] = new Course (user_input);
-	///courses[no_of_courses]->print_matrix(); //////testing
-	no_of_courses++;
-
-
-	}
-	*/
 	//------------------------------Printing inputs
 	for (int i = 0; i < allCourses.size(); i++)
 	{
 		cout << i+1 << " ";
 		cout << allCourses[i];
-		//courses[i]->print_matrix();////////////////////////////////////////
 	}
 
 	cout << "\n";
@@ -265,38 +238,12 @@ int main()
 		openOrClose = false;
 
 
-	//-----------------Getting the courses the user want to enroll at
-	/*
-	int no_of_user_courses;
-	cout << "Please enter the number of courses you want: ";
-	cin >> no_of_user_courses;
-
-	string* p_user_courses = new string[no_of_user_courses];
-	*/
 	bool tryAgain = true;
 	while (tryAgain)
 	{
-		vector<string> inputUserCoursesString;
-		cout << "Please enter the courses you want ";
-		cout << "\n";
-		cout << "enter each course then press enter";
-		cout << "\n";
-		cout << "Enter 0 when you finish";
-		cout << "\n";
-		string temp1 = "";
-		int userCount = 1;
-		cout << userCount << " ";
-		cin >> temp1;
-		while (temp1 != "0")
-		{
-
-			Convert_String_To_Uppercase(temp1);
-			inputUserCoursesString.push_back(temp1);
-			userCount++;
-			cout << userCount << " ";
-			cin >> temp1;
-		}
-
+		//-----------------Getting the courses the user want to enroll at
+		vector<string> inputUserCoursesString = getUserCourses();
+		
 
 		//------------------Printing the courses the user want to enroll at
 		cout << "\n";
@@ -312,9 +259,10 @@ int main()
 
 
 		//Adding each course lec & tut to other courses
-		auto stime = std::chrono::high_resolution_clock::now();
-		//-------------Organising courses into Subject (Lecture + tutorial)
+		Time::time_point stime = Time::now();
 
+
+		//-------------Organising courses into Subject (Lecture + tutorial)
 		vector< vector<TimeTable*> >  subjects;
 		for (int i = 0; i < inputUserCoursesString.size(); i++)
 		{
@@ -333,63 +281,9 @@ int main()
 		}
 
 
-		////////////////////////////PROBLEM: EXCESSIVE memory use 2GB//////////////////////////////////////////////////
-		////////////////////////////SOLVED, the problem was with the time matrix///////////////////////////////////////
-
-
+		//Get premutations from subjects
+		vector<TimeTable> finalTables = getPremutations(subjects); //Contains the final tables to be displayed before sorting
 		
-
-		//DynArr<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
-
-
-		vector<TimeTable> finalTables; //Contains the final tables to be displayed before sorting
-		if (subjects.size() != 0)
-		{
-			bool end = false;
-
-			vector<int> indices;
-			int n1 = 0;
-			for (int i = 0; i < subjects.size(); i++)
-			{
-				if (subjects[i].size() == 0)
-					end = true;
-				indices.push_back(n1);
-			}
-			/*cout << "Indices : " << indices << "\n";
-			system("pause");*/
-
-
-
-			//int v = 0;
-
-
-			bool dismissed = false;
-
-
-
-			while (indices[0] < subjects[0].size() && !end) //REMEMBER Size is more than the indices by 1
-			{
-				TimeTable temp;
-				for (int i = 0; i < subjects.size(); i++)
-				{
-					if (Check_If_Matrix_Added(subjects[i][indices[i]]->getTimeMatrix(), temp.getTimeMatrix()))
-					{
-						temp.AddTable(subjects[i][indices[i]]);
-					}
-					else
-					{
-						dismissed = true;
-						break;
-					}
-				}
-				if (!dismissed)
-				{
-					finalTables.push_back(temp);
-				}
-				dismissed = false;
-				resetIndex(subjects.size() - 1, indices, subjects, end);
-			}
-		}
 
 		//Sorting final tables according to the noOfFreeDays and noOfGaps DESCENDINGLY
 		sort(finalTables.begin(), finalTables.end(), [](const TimeTable &t1, const TimeTable &t2) {
@@ -404,23 +298,7 @@ int main()
 		
 
 		//Printing the sorted timetables
-		for (int i = 0; i < finalTables.size(); i++)
-		{
-			cout << "\n";
-			cout << "\n";
-			cout << "======================================================================================================================\n";
-			cout << "Table number " << i + 1 << "\n" << finalTables[i] << "\n";
-			//finalTables.Get(i).PrintMatrix();
-			cout << "\nNo of gap hours = " << finalTables[i].getNoOfGaps();
-			cout << "\nNo of free days = " << finalTables[i].getNoOfFreeDays() << "\t(Saturdays included)\n";
-			cout << "======================================================================================================================\n";
-		}
-		auto etime = std::chrono::high_resolution_clock::now();
-		auto diff = std::chrono::duration_cast<std::chrono::microseconds>(etime - stime);
-		cout << "The Program took " << diff.count() / 1000000.0 << " seconds.\n";
-
-		cout << "Total number of tables = " << finalTables.size() << "\n";
-		cout << "Finished!! \n";
+		printTimetables(finalTables, stime);
 		
 		
 		//Ask user to try again
@@ -716,4 +594,102 @@ vector<TimeTable*> addLecandTut(vector<Session*> &lec, vector<Session*> &tut, co
 
 	return tempTimetable;
 
+}
+
+vector<string> getUserCourses()
+{
+	vector<string> inputUserCoursesString;
+	cout << "Please enter the courses you want ";
+	cout << "\n";
+	cout << "enter each course then press enter";
+	cout << "\n";
+	cout << "Enter 0 when you finish";
+	cout << "\n";
+	string temp1 = "";
+	int userCount = 1;
+	cout << userCount << " ";
+	cin >> temp1;
+	while (temp1 != "0")
+	{
+
+		Convert_String_To_Uppercase(temp1);
+		inputUserCoursesString.push_back(temp1);
+		userCount++;
+		cout << userCount << " ";
+		cin >> temp1;
+	}
+
+	return inputUserCoursesString;
+}
+
+void printTimetables(const vector<TimeTable> &finalTables, Time::time_point sTime)
+{
+	for (int i = 0; i < finalTables.size(); i++)
+	{
+		cout << "\n";
+		cout << "\n";
+		cout << "======================================================================================================================\n";
+		cout << "Table number " << i + 1 << "\n" << finalTables[i] << "\n";
+		//finalTables.Get(i).PrintMatrix();
+		cout << "\nNo of gap hours = " << finalTables[i].getNoOfGaps();
+		cout << "\nNo of free days = " << finalTables[i].getNoOfFreeDays() << "\t(Saturdays included)\n";
+		cout << "======================================================================================================================\n";
+	}
+
+	//Calculating time
+	Time::time_point etime = std::chrono::high_resolution_clock::now();
+	std::chrono::microseconds diff = std::chrono::duration_cast<std::chrono::microseconds>(etime - sTime);
+	cout << "The Program took " << diff.count() / 1000000.0 << " seconds.\n";
+
+	cout << "Total number of tables = " << finalTables.size() << "\n";
+	cout << "Finished!! \n";
+
+}
+
+vector<TimeTable> getPremutations(const vector< vector<TimeTable*> >&subjects)
+{
+	vector<TimeTable> finalTables;
+
+	if (subjects.size() != 0)
+	{
+		bool end = false;
+
+		vector<int> indices;
+		int n1 = 0;
+		for (int i = 0; i < subjects.size(); i++)
+		{
+			if (subjects[i].size() == 0)
+				end = true;
+			indices.push_back(n1);
+		}
+
+		bool dismissed = false;
+
+
+
+		while (indices[0] < subjects[0].size() && !end) //REMEMBER Size is more than the indices by 1
+		{
+			TimeTable temp;
+			for (int i = 0; i < subjects.size(); i++)
+			{
+				if (Check_If_Matrix_Added(subjects[i][indices[i]]->getTimeMatrix(), temp.getTimeMatrix()))
+				{
+					temp.AddTable(subjects[i][indices[i]]);
+				}
+				else
+				{
+					dismissed = true;
+					break;
+				}
+			}
+			if (!dismissed)
+			{
+				finalTables.push_back(temp);
+			}
+			dismissed = false;
+			resetIndex(subjects.size() - 1, indices, subjects, end);
+		}
+	}
+
+	return finalTables;
 }
